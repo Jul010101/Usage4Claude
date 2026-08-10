@@ -33,7 +33,8 @@
 - **⚙️ Benutzerdefinierte Anzeige** – Wähle manuell aus, welche Limit-Typen angezeigt werden, in beliebiger Kombination
 - **🎨 Intelligente Farben** – Warnt durch automatischen Farbwechsel je nach Auslastung; jeder Limit-Typ hat sein eigenes Farbschema
 - **🔔 Nutzungsbenachrichtigungen** – Sendet eine Warnung bei 90 % Auslastung und eine Benachrichtigung beim Zurücksetzen des Kontingents
-- **👥 Verwaltung mehrerer Accounts** – Unterstützt mehrere Claude-Accounts / mehrere Organisationen pro Account sowie eine eigenständige Codex-Account-Verwaltung mit schnellem Wechsel
+- **👥 Übersicht mehrerer Accounts** – Alle Claude- und Codex-Accounts auf einen Blick: Jede Zeile trägt ein Provider-Abzeichen und zeigt das verbleibende 5-Stunden-/7-Tage-Kontingent, den Status (aufgebraucht oder Anmelde-/Verbindungsfehler) und die Reset-Zeiten des Kontingents – dazu eine **Nächste Verfügbarkeit**-Karte, die einen sofort nutzbaren Account nennt oder den frühesten sicher bekannten Kontingent-Reset, wenn alle aufgebraucht sind; reine Ansicht ohne Accountwechsel
+- **🔀 Verwaltung mehrerer Accounts** – Unterstützt mehrere Claude-Accounts / mehrere Organisationen pro Account sowie eine eigenständige Codex-Account-Verwaltung mit schnellem Wechsel
 - **🧩 Codex-Unterstützung** – Optionale Codex-Nutzungsüberwachung; Codex kann allein oder in einer zweispaltigen Ansicht neben Claude verwendet werden (in den Einstellungen einen Codex-Account hinzufügen, um es zu aktivieren)
 - **🌐 Integrierte Browser-Anmeldung** – Bei Claude wird der Session Key automatisch ausgelesen; bei Codex erfolgt die Anmeldung über den integrierten Browser bei ChatGPT
 - **🎨 Erscheinungsbild** – Unterstützt die Modi System / Hell / Dunkel
@@ -402,9 +403,12 @@ A: macOS selbst oder Drittanbietersoftware (wie Bartender, Hidden Bar usw.) blen
 
 A: Usage4Claude unterstützt mehrere Claude-Accounts, mehrere Organisationen pro Claude-Account sowie eine eigenständige Codex-Account-Verwaltung:
 - **Account hinzufügen** – Unter Einstellungen → Anmeldedaten per Claude-Browser-Anmeldung, manueller Claude-Eingabe oder Codex-Browser-Anmeldung
+- **Alle Accounts ansehen** – Ab zwei Accounts öffnet das Detailfenster eine reine Übersicht, die alle Claude- und Codex-Accounts zusammen auflistet (jeweils mit Provider-Abzeichen), sodass du verbleibendes Kontingent, Status (aufgebraucht/Fehler) und Reset-Zeiten vergleichen kannst, ohne zu wechseln; eine **Nächste Verfügbarkeit**-Karte hebt einen sofort nutzbaren Account hervor oder – wenn alle aufgebraucht sind – den frühesten sicher bekannten Reset; lange Listen scrollen im Bereich. Über das Personensymbol wechselst du zwischen Übersicht und Einzelaccount-Details
 - **Account wechseln** – Im Detailfenster auf das „…"-Menü oder mit Rechtsklick auf das Menüleisten-Symbol den gewünschten Claude-/Codex-Account auswählen
 - **Alias bearbeiten** – Für jeden Account einen gut erkennbaren Alias festlegen
 - **Account löschen** – Nicht mehr benötigte Accounts per Wischgeste oder im Bearbeitungsmodus entfernen
+
+In der Übersicht und auf der Karte „Nächste Verfügbarkeit“ angezeigte Reset-Zeiten sind Resets des Nutzungs-/Kontingentfensters, keine Verlängerungstermine der Abo-Abrechnung. Ist keine Reset-Zeit sicher bekannt, zeigt die Karte ehrlich „Verfügbarkeit derzeit unbekannt“ an, statt zu raten.
 
 </details>
 

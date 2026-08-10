@@ -33,7 +33,8 @@
 - **⚙️ Affichage personnalisé** - Sélection manuelle des types de limites à afficher, toute combinaison possible
 - **🎨 Couleurs intelligentes** - Changement automatique des couleurs selon l'utilisation, chaque type de limite a son propre schéma
 - **🔔 Notifications d'utilisation** - Avertissement à 90 % d'utilisation, notification lors de la réinitialisation du quota
-- **👥 Gestion multi-comptes** - Support de plusieurs comptes Claude / plusieurs organisations par compte, avec gestion de comptes Codex indépendante et changement rapide
+- **👥 Vue d'ensemble multi-comptes** - Visualisez tous vos comptes Claude et Codex d'un coup d'œil : chaque ligne porte un badge de fournisseur et affiche le quota 5h / 7j restant, le statut (épuisé ou erreur d'identifiants/connexion) et les heures de réinitialisation du quota — avec une carte **Prochaine disponibilité** qui indique un compte utilisable immédiatement, ou la plus proche réinitialisation de quota connue avec certitude lorsque tous sont épuisés ; vue en lecture seule, sans changement de compte
+- **🔀 Gestion multi-comptes** - Support de plusieurs comptes Claude / plusieurs organisations par compte, avec gestion de comptes Codex indépendante et changement rapide
 - **🧩 Support Codex** - Surveillance optionnelle des quotas Codex ; utilisez Codex seul ou aux côtés de Claude en vue à deux colonnes
 - **🌐 Connexion via navigateur intégré** - Claude extrait automatiquement la Session Key ; Codex utilise le navigateur intégré pour se connecter à ChatGPT
 - **🎨 Réglages d'apparence** - Support du mode système / clair / sombre
@@ -402,9 +403,12 @@ R : macOS ou des logiciels tiers (Bartender, Hidden Bar, etc.) masquent parfois 
 
 R : Usage4Claude prend en charge plusieurs comptes Claude, plusieurs organisations sous un même compte Claude, ainsi que des comptes Codex indépendants :
 - **Ajouter un compte** - Connexion navigateur Claude, saisie manuelle Claude ou connexion navigateur Codex dans Réglages → Authentification
+- **Voir tous les comptes** - À partir de deux comptes, la fenêtre de détail ouvre une vue d'ensemble en lecture seule qui liste ensemble tous les comptes Claude et Codex (chacun avec un badge de fournisseur), pour comparer le quota restant, le statut (épuisé/erreur) et les heures de réinitialisation sans changer de compte ; une carte **Prochaine disponibilité** met en avant un compte utilisable immédiatement (ou la plus proche réinitialisation connue avec certitude lorsque tous sont épuisés), et les longues listes défilent sur place. Utilisez l'icône de personne pour basculer entre la vue d'ensemble et le détail d'un compte
 - **Changer de compte** - Menu « … » dans la fenêtre de détail ou clic droit sur l'icône de la barre des menus
 - **Modifier l'alias** - Donnez à chaque compte un nom facile à reconnaître
 - **Supprimer un compte** - Supprimez les comptes inutiles depuis la liste des comptes
+
+Les heures de réinitialisation affichées dans la vue d'ensemble et sur la carte « Prochaine disponibilité » sont des réinitialisations de la fenêtre d'usage/de quota, pas des dates de renouvellement de facturation de l'abonnement. Lorsqu'aucune heure de réinitialisation n'est connue avec certitude, la carte indique honnêtement que la disponibilité est inconnue au lieu de deviner.
 
 </details>
 

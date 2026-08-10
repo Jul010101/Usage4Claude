@@ -33,7 +33,7 @@
 - **⚙️ Custom Display** - Manually select which limit types to display, supports any combination
 - **🎨 Smart Colors** - Automatic color changes based on usage, each limit type has its own color scheme
 - **🔔 Usage Notifications** - Warning notification at 90% usage, reset notification when quota resets
-- **👥 Multi-Account Overview** - See every Claude account together, including remaining 5-hour / 7-day quota, exhausted or credential-error status, and quota reset times without switching accounts
+- **👥 Multi-Account Overview** - See every Claude and Codex account together at a glance — each row carries a provider badge and shows remaining 5-hour / 7-day quota, exhausted or credential-error status, and quota reset times — plus a **Next Available** card that names an account you can use right now, or the earliest confidently known quota reset when all are exhausted, in a read-only view with no account switching
 - **🔀 Multi-Account Management** - Support multiple Claude accounts / multiple organizations per account, plus independent Codex account management and quick switching
 - **🧩 Codex Support** - Optional Codex quota monitoring; use Codex alone or show it alongside Claude in a dual-column view (add a Codex account in settings to enable)
 - **🌐 Built-in Browser Login** - Claude login automatically extracts Session Key; Codex uses built-in browser login for ChatGPT authentication
@@ -403,12 +403,12 @@ A: macOS system or third-party software (like Bartender, Hidden Bar, etc.) may a
 
 A: Usage4Claude supports multiple Claude accounts, multiple organizations under the same Claude account, and independent Codex account management:
 - **Add Account** - Add via Claude browser login, Claude manual input, or Codex browser login in Settings → Authentication
-- **View All Claude Accounts** - Open the detail window to compare each account's remaining quota, status, and quota reset time in one overview; use the person icon to switch between overview and single-account details
+- **View All Accounts** - With two or more accounts, the detail window opens a read-only overview listing every Claude and Codex account together, each tagged with a provider badge, so you can compare remaining quota, exhausted/error status, and quota reset times without switching; a prominent **Next Available** card highlights an account you can use right now (or the earliest confidently known reset when every account is exhausted), and long lists scroll in place. Use the person icon to switch between the overview and single-account details
 - **Switch Account** - Click "…" menu in detail window or right-click menu bar icon, select the Claude / Codex account to switch to
 - **Edit Alias** - Set easily recognizable aliases for each account
 - **Delete Account** - Swipe left or use edit mode to remove unwanted accounts
 
-Reset times shown in the overview are Claude quota-window resets, not subscription billing renewal dates.
+Reset times shown in the overview — and the Next Available card's "Resumes at" time — are usage/quota-window resets, not subscription billing renewal dates. When no reset time is confidently known, the card honestly shows availability as unknown instead of guessing.
 
 </details>
 
