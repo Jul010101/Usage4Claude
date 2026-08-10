@@ -24,6 +24,28 @@ struct CodexUsageData: Sendable {
     let secondary: LimitData?
     /// Codex Extra Usage / credits 数据
     let extraUsage: CodexExtraUsageData?
+    /// Server-reported "can send a request right now" flag from `rate_limit.allowed`.
+    /// Authoritative for availability — see `AccountAvailabilityClassifier.codexAvailability`.
+    /// Defaults to `nil` so existing call sites that predate this field keep compiling.
+    let allowed: Bool?
+    /// Server-reported "limit already reached" flag from `rate_limit.limit_reached`.
+    /// Authoritative for availability — see `AccountAvailabilityClassifier.codexAvailability`.
+    /// Defaults to `nil` so existing call sites that predate this field keep compiling.
+    let limitReached: Bool?
+
+    init(
+        primary: LimitData?,
+        secondary: LimitData?,
+        extraUsage: CodexExtraUsageData?,
+        allowed: Bool? = nil,
+        limitReached: Bool? = nil
+    ) {
+        self.primary = primary
+        self.secondary = secondary
+        self.extraUsage = extraUsage
+        self.allowed = allowed
+        self.limitReached = limitReached
+    }
 
     struct LimitData: Sendable {
         /// 当前使用百分比 (0-100)
@@ -172,7 +194,13 @@ nonisolated struct CodexUsageResponse: Codable, Sendable {
             )
         }
 
-        return CodexUsageData(primary: primary, secondary: secondary, extraUsage: extraUsage)
+        return CodexUsageData(
+            primary: primary,
+            secondary: secondary,
+            extraUsage: extraUsage,
+            allowed: rate_limit?.allowed,
+            limitReached: rate_limit?.limit_reached
+        )
     }
 }
 
