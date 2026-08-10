@@ -36,3 +36,14 @@ extension AccountLimitSummary {
         "\(Int(remainingPercentage.rounded()))%"
     }
 }
+
+extension Date {
+    /// Compact reset-time text ("Today 14:30" / "Tomorrow 09:00" / "Nov 29"),
+    /// reusing `UsageData.LimitData.formattedCompactResetTime` via the same
+    /// bridging trick as `AccountLimitSummary.formattedCompactResetTime` above.
+    /// Used to render an `AccountAvailability.blocked(until:)` date, which —
+    /// unlike `AccountLimitSummary` — carries no used-percentage of its own.
+    var formattedCompactResetTime: String {
+        UsageData.LimitData(percentage: 0, resetsAt: self).formattedCompactResetTime
+    }
+}

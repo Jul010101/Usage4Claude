@@ -400,6 +400,16 @@ final class AccountStore: ObservableObject {
         Logger.settings.notice("Codex session-token 已静默更新（自动续期）")
     }
 
+    /// 静默更新指定账户（按 UUID 定向）的 Codex session-token（不触发 accountChanged 通知）
+    /// 用于多账户总览场景的 OAuth refresh_token / session-token 轮换写回——目标账户不一定是
+    /// 当前账户，因此不能复用只认 currentCodexAccountId 的 silentlyUpdateCurrentCodexSessionToken。
+    func silentlyUpdateCodexSessionToken(_ token: String, forAccountId accountId: UUID) {
+        guard let index = codexAccounts.firstIndex(where: { $0.id == accountId }) else { return }
+        guard codexAccounts[index].sessionKey != token else { return }
+        codexAccounts[index].sessionKey = token
+        Logger.settings.notice("Codex session-token 已静默更新（账户 ID 定向，自动续期）")
+    }
+
     // MARK: - Shared Helpers
 
     private func postAccountChanged(provider: ProviderType) {

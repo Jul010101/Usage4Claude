@@ -35,7 +35,8 @@ let package = Package(
                 "Helpers/ResetTimeChange.swift",
                 "Helpers/NotificationDecisionEngine.swift",
                 "Models/CodexUsageData.swift",
-                "Helpers/AccountUsageStatus.swift"
+                "Helpers/AccountUsageStatus.swift",
+                "Helpers/AccountAvailability.swift"
             ]
         ),
         .testTarget(

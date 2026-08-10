@@ -166,4 +166,74 @@ final class AccountUsageStatusTests: XCTestCase {
         XCTAssertEqual(a, b)
         XCTAssertNotEqual(a, c)
     }
+    // MARK: - health(for: AccountAvailability) mapping
+
+    func testHealthForAvailableNowIsActive() {
+        XCTAssertEqual(AccountHealthClassifier.health(for: .availableNow), .active)
+    }
+
+    func testHealthForBlockedIsExhausted() {
+        XCTAssertEqual(AccountHealthClassifier.health(for: .blocked(until: nil)), .exhausted)
+        XCTAssertEqual(AccountHealthClassifier.health(for: .blocked(until: Date(timeIntervalSince1970: 1_000))), .exhausted)
+    }
+
+    func testHealthForUnknownIsTemporaryFailure() {
+        XCTAssertEqual(AccountHealthClassifier.health(for: .unknown), .temporaryFailure)
+    }
+
+    // MARK: - Codex row adaptation: summary(codexData:availability:)
+
+    private func codexLimit(_ percentage: Double, resetsAt: Date? = nil) -> CodexUsageData.LimitData {
+        CodexUsageData.LimitData(percentage: percentage, resetsAt: resetsAt)
+    }
+
+    func testCodexSummaryPreservesWindowPercentagesAndResetDates() {
+        let fiveHourReset = Date(timeIntervalSince1970: 1_000)
+        let sevenDayReset = Date(timeIntervalSince1970: 2_000)
+        let data = CodexUsageData(
+            primary: codexLimit(35, resetsAt: fiveHourReset),
+            secondary: codexLimit(65, resetsAt: sevenDayReset),
+            extraUsage: nil,
+            allowed: true,
+            limitReached: false
+        )
+        let availability = AccountAvailabilityClassifier.codexAvailability(data)
+        let summary = AccountHealthClassifier.summary(codexData: data, availability: availability)
+
+        XCTAssertEqual(summary.fiveHour?.usedPercentage, 35)
+        XCTAssertEqual(summary.fiveHour?.resetsAt, fiveHourReset)
+        XCTAssertEqual(summary.sevenDay?.usedPercentage, 65)
+        XCTAssertEqual(summary.sevenDay?.resetsAt, sevenDayReset)
+    }
+
+    func testCodexSummaryHealthMatchesAuthoritativeAvailabilityWhenAllowedTrueEvenAt100Percent() {
+        // Server says allowed even though the window reads 100% — health must
+        // follow the authoritative availability (active), not the raw percentage.
+        let data = CodexUsageData(
+            primary: codexLimit(100),
+            secondary: nil,
+            extraUsage: nil,
+            allowed: true,
+            limitReached: nil
+        )
+        let availability = AccountAvailabilityClassifier.codexAvailability(data)
+        let summary = AccountHealthClassifier.summary(codexData: data, availability: availability)
+        XCTAssertEqual(availability, .availableNow)
+        XCTAssertEqual(summary.health, .active)
+    }
+
+    func testCodexSummaryHealthMatchesAuthoritativeAvailabilityWhenLimitReachedTrue() {
+        let data = CodexUsageData(
+            primary: codexLimit(10),
+            secondary: nil,
+            extraUsage: nil,
+            allowed: nil,
+            limitReached: true
+        )
+        let availability = AccountAvailabilityClassifier.codexAvailability(data)
+        let summary = AccountHealthClassifier.summary(codexData: data, availability: availability)
+        XCTAssertEqual(availability, .blocked(until: nil))
+        XCTAssertEqual(summary.health, .exhausted)
+    }
+
 }

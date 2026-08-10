@@ -68,6 +68,14 @@ enum L {
         static var summaryAvailable: String { localized("accounts.summary_available") }
         static var summaryExhausted: String { localized("accounts.summary_exhausted") }
         static var summaryAttention: String { localized("accounts.summary_attention") }
+        static var nextAccessTitle: String { localized("accounts.next_access_title") }
+        static var nextAccessAvailableNow: String { localized("accounts.next_access_available_now") }
+        static func nextAccessResumesAt(_ time: String) -> String {
+            String(format: localized("accounts.next_access_resumes_at"), time)
+        }
+        static var nextAccessUnknown: String { localized("accounts.next_access_unknown") }
+        static var providerClaude: String { localized("accounts.provider_claude") }
+        static var providerCodex: String { localized("accounts.provider_codex") }
     }
     
     // MARK: - Usage Detail View
