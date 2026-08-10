@@ -436,3 +436,17 @@
 "weblogin.claude_oauth_manual_prompt" = "Paste the link from your browser's address bar (starts with http://localhost)";
 "weblogin.claude_oauth_manual_submit" = "Sign in with this link";
 "weblogin.claude_oauth_manual_invalid" = "No authorization code found. Copy the full link from your browser's address bar and try again.";
+
+// MARK: - Accounts Overview (feat/multi-account-overview)
+"accounts.overview_title" = "Claude Accounts";
+"accounts.toggle_to_overview" = "Show All Accounts";
+"accounts.toggle_to_detail" = "Show Account Detail";
+"accounts.current_badge" = "Current";
+"accounts.status_active" = "Active";
+"accounts.status_exhausted" = "Quota Exhausted";
+"accounts.status_invalid" = "Sign In Needed";
+"accounts.status_unavailable" = "Temporarily Unavailable";
+"accounts.status_not_configured" = "Not Configured";
+"accounts.summary_available" = "Available";
+"accounts.summary_exhausted" = "Exhausted";
+"accounts.summary_attention" = "Needs Attention";

@@ -36,6 +36,12 @@ class DataRefreshManager: ObservableObject {
     @Published var isLoading = false
     /// 错误消息
     @Published var errorMessage: String?
+    /// Typed Claude usage error, kept in lockstep with `errorMessage` for callers
+    /// (e.g. the multi-account overview) that need type-safe classification
+    /// instead of matching against the localized string. Cleared at the start
+    /// of every Claude fetch, on success, and on account switch; set on
+    /// no-credentials and on any Claude fetch failure that is a `UsageError`.
+    @Published var claudeUsageError: UsageError?
     /// Codex 错误消息（独立于 Claude，避免双 Provider 时被静默隐藏）
     @Published var codexErrorMessage: String?
     /// 刷新状态管理器
@@ -124,6 +130,7 @@ class DataRefreshManager: ObservableObject {
     func fetchUsage() {
         isLoading = true
         errorMessage = nil
+        claudeUsageError = nil
         codexErrorMessage = nil
         lastAPIFetchTime = Date()
 
@@ -132,6 +139,9 @@ class DataRefreshManager: ObservableObject {
 
         if !fetchClaude {
             clearClaudeUsageState()
+            if !settings.hasValidCredentials {
+                claudeUsageError = .noCredentials
+            }
         }
         if !fetchCodex {
             clearCodexUsageState()
@@ -191,6 +201,7 @@ class DataRefreshManager: ObservableObject {
                     let previousData = self.usageData
                     self.usageData = data
                     self.errorMessage = nil
+                    self.claudeUsageError = nil
                     monitoringUtilizations[.claude] = data.percentage
 
                     if self.settings.notificationsEnabled {
@@ -208,6 +219,7 @@ class DataRefreshManager: ObservableObject {
 
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
+                    self.claudeUsageError = (error as? UsageError) ?? .networkError
                     Logger.menuBar.error("Claude API 请求失败: \(error.localizedDescription)")
 
                 case .none:
@@ -454,10 +466,14 @@ class DataRefreshManager: ObservableObject {
     private func fetchClaudeOnly() {
         guard shouldFetchClaudeUsage else {
             clearClaudeUsageState()
+            if !settings.hasValidCredentials {
+                claudeUsageError = .noCredentials
+            }
             return
         }
         isLoading = true
         errorMessage = nil
+        claudeUsageError = nil
         lastAPIFetchTime = Date()
 
         // ClaudeAPIService.fetchUsage 保证 completion 一律在主线程回调，此处无需再包一层 DispatchQueue.main.async
@@ -471,6 +487,7 @@ class DataRefreshManager: ObservableObject {
                 let previousData = self.usageData
                 self.usageData = data
                 self.errorMessage = nil
+                self.claudeUsageError = nil
                 if self.settings.notificationsEnabled {
                     NotificationManager.shared.checkAndNotify(usageData: data, previousData: previousData)
                 }
@@ -485,6 +502,7 @@ class DataRefreshManager: ObservableObject {
             case .failure(let error):
                 self.clearClaudeUsageState()
                 self.errorMessage = error.localizedDescription
+                self.claudeUsageError = (error as? UsageError) ?? .networkError
                 Logger.menuBar.error("Claude API 请求失败: \(error.localizedDescription)")
             }
         }
@@ -644,6 +662,7 @@ class DataRefreshManager: ObservableObject {
         switch provider {
         case .claude:
             errorMessage = nil
+            claudeUsageError = nil
             clearClaudeUsageState()
             if shouldFetchClaudeUsage {
                 fetchClaudeOnly()
@@ -658,6 +677,7 @@ class DataRefreshManager: ObservableObject {
             }
 
         case .none:
+            claudeUsageError = nil
             clearClaudeUsageState()
             clearCodexUsageState()
             NotificationManager.shared.resetAllNotificationStates()

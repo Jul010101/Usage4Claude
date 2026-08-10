@@ -1027,6 +1027,12 @@ class UserSettings: ObservableObject {
         accountStore.silentlyUpdateCurrentClaudeSessionToken(token)
     }
 
+    /// 静默更新指定账户（按 UUID 定向）的 Claude session-token（不触发 accountChanged 通知）
+    /// 用于多账户总览的 OAuth refresh_token 轮换写回场景
+    func silentlyUpdateClaudeSessionToken(_ token: String, forAccountId accountId: UUID) {
+        accountStore.silentlyUpdateClaudeSessionToken(token, forAccountId: accountId)
+    }
+
     private func ensureDefaultCodexDisplayTypesForCustomMode() {
         guard displayMode == .custom else { return }
         let codexTypes: Set<LimitType> = [.codexPrimary, .codexSecondary, .codexExtraUsage]

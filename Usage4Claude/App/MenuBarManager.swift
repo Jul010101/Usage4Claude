@@ -46,6 +46,16 @@ class MenuBarManager: ObservableObject {
     private let ui = MenuBarUI()
     /// 数据刷新管理器
     private let dataManager = DataRefreshManager()
+    /// 多账户总览模型（feat/multi-account-overview）：稳定持有，基于 settings.accountStore +
+    /// dataManager 构建。`MultiAccountOverviewModel` 是 @MainActor 类型，而 MenuBarManager
+    /// 本身未标注 @MainActor；这里所有调用点本就运行在主线程（AppKit target-action /
+    /// Combine .receive(on: .main)），用 `MainActor.assumeIsolated` 把这个运行时保证桥接到
+    /// 静态隔离检查，而不必给整个协调器类重新标注隔离域。
+    private lazy var multiAccountOverviewModel: MultiAccountOverviewModel = {
+        MainActor.assumeIsolated {
+            MultiAccountOverviewModel(accountStore: settings.accountStore, dataRefreshManager: dataManager)
+        }
+    }()
     /// 设置窗口
     private var settingsWindow: NSWindow?
     /// 用户设置实例
@@ -174,6 +184,7 @@ class MenuBarManager: ObservableObject {
         switch action {
         case .refresh:
             dataManager.handleManualRefresh()
+            MainActor.assumeIsolated { multiAccountOverviewModel.refresh(force: true) }
         case .refreshClaude:
             dataManager.handleClaudeOnlyRefresh()
         case .refreshCodex:
@@ -317,6 +328,9 @@ class MenuBarManager: ObservableObject {
         // 智能刷新数据
         dataManager.refreshOnPopoverOpen()
 
+        // 多账户总览（feat/multi-account-overview）：每次打开 popover 都刷新其他账户行
+        MainActor.assumeIsolated { multiAccountOverviewModel.refresh() }
+
         // 显示更新通知（如果有）
         showUpdateNotificationIfNeeded()
 
@@ -353,7 +367,8 @@ class MenuBarManager: ObservableObject {
             shouldShowUpdateBadge: Binding(
                 get: { self.shouldShowUpdateBadge },
                 set: { _ in }
-            )
+            ),
+            overviewModel: multiAccountOverviewModel
         ))
 
         // 打开 popover
@@ -381,6 +396,8 @@ class MenuBarManager: ObservableObject {
 
         // 清理刷新定时器
         dataManager.stopPopoverRefreshTimer()
+        // 多账户总览：关闭 popover 时取消其他账户的轮询
+        MainActor.assumeIsolated { multiAccountOverviewModel.cancel() }
     }
 
     /// 更新弹出窗口内容
@@ -583,6 +600,8 @@ class MenuBarManager: ObservableObject {
     func cleanup() {
         // 停止 popover 刷新定时器
         dataManager.stopPopoverRefreshTimer()
+        // 多账户总览：退出时取消轮询
+        MainActor.assumeIsolated { multiAccountOverviewModel.cancel() }
 
         // 清理窗口观察者
         if let observer = windowCloseObserver {

@@ -33,7 +33,8 @@
 - **⚙️ Custom Display** - Manually select which limit types to display, supports any combination
 - **🎨 Smart Colors** - Automatic color changes based on usage, each limit type has its own color scheme
 - **🔔 Usage Notifications** - Warning notification at 90% usage, reset notification when quota resets
-- **👥 Multi-Account Management** - Support multiple Claude accounts / multiple organizations per account, plus independent Codex account management and quick switching
+- **👥 Multi-Account Overview** - See every Claude account together, including remaining 5-hour / 7-day quota, exhausted or credential-error status, and quota reset times without switching accounts
+- **🔀 Multi-Account Management** - Support multiple Claude accounts / multiple organizations per account, plus independent Codex account management and quick switching
 - **🧩 Codex Support** - Optional Codex quota monitoring; use Codex alone or show it alongside Claude in a dual-column view (add a Codex account in settings to enable)
 - **🌐 Built-in Browser Login** - Claude login automatically extracts Session Key; Codex uses built-in browser login for ChatGPT authentication
 - **🎨 Appearance Settings** - Support system default / light / dark appearance modes
@@ -402,9 +403,12 @@ A: macOS system or third-party software (like Bartender, Hidden Bar, etc.) may a
 
 A: Usage4Claude supports multiple Claude accounts, multiple organizations under the same Claude account, and independent Codex account management:
 - **Add Account** - Add via Claude browser login, Claude manual input, or Codex browser login in Settings → Authentication
+- **View All Claude Accounts** - Open the detail window to compare each account's remaining quota, status, and quota reset time in one overview; use the person icon to switch between overview and single-account details
 - **Switch Account** - Click "…" menu in detail window or right-click menu bar icon, select the Claude / Codex account to switch to
 - **Edit Alias** - Set easily recognizable aliases for each account
 - **Delete Account** - Swipe left or use edit mode to remove unwanted accounts
+
+Reset times shown in the overview are Claude quota-window resets, not subscription billing renewal dates.
 
 </details>
 
