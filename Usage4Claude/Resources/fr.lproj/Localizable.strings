@@ -436,3 +436,17 @@
 "weblogin.claude_oauth_manual_prompt" = "Collez le lien depuis la barre d'adresse de votre navigateur (commence par http://localhost)";
 "weblogin.claude_oauth_manual_submit" = "Se connecter avec ce lien";
 "weblogin.claude_oauth_manual_invalid" = "Aucun code d'autorisation trouvé. Copiez le lien complet depuis la barre d'adresse et réessayez.";
+
+// MARK: - Accounts Overview (feat/multi-account-overview)
+"accounts.overview_title" = "Comptes Claude";
+"accounts.toggle_to_overview" = "Afficher tous les comptes";
+"accounts.toggle_to_detail" = "Afficher le détail du compte";
+"accounts.current_badge" = "Actuel";
+"accounts.status_active" = "Actif";
+"accounts.status_exhausted" = "Quota épuisé";
+"accounts.status_invalid" = "Connexion requise";
+"accounts.status_unavailable" = "Temporairement indisponible";
+"accounts.status_not_configured" = "Non configuré";
+"accounts.summary_available" = "Disponibles";
+"accounts.summary_exhausted" = "Épuisés";
+"accounts.summary_attention" = "À vérifier";

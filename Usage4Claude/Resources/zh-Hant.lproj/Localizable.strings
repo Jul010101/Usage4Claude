@@ -436,3 +436,17 @@
 "weblogin.claude_oauth_manual_prompt" = "將瀏覽器網址列的連結貼到這裡（以 http://localhost 開頭）";
 "weblogin.claude_oauth_manual_submit" = "以此連結登入";
 "weblogin.claude_oauth_manual_invalid" = "無法從貼上的內容中找到授權碼。請複製瀏覽器網址列的完整連結後重試。";
+
+// MARK: - Accounts Overview (feat/multi-account-overview)
+"accounts.overview_title" = "Claude 帳戶";
+"accounts.toggle_to_overview" = "顯示所有帳戶";
+"accounts.toggle_to_detail" = "顯示帳戶詳情";
+"accounts.current_badge" = "目前";
+"accounts.status_active" = "可用";
+"accounts.status_exhausted" = "額度已用完";
+"accounts.status_invalid" = "需要重新登入";
+"accounts.status_unavailable" = "暫時無法使用";
+"accounts.status_not_configured" = "尚未設定";
+"accounts.summary_available" = "可用";
+"accounts.summary_exhausted" = "已用完";
+"accounts.summary_attention" = "需要留意";

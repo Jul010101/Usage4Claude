@@ -436,3 +436,17 @@
 "weblogin.claude_oauth_manual_prompt" = "ブラウザのアドレスバーのリンクを貼り付けてください（http://localhost で始まります）";
 "weblogin.claude_oauth_manual_submit" = "このリンクでサインイン";
 "weblogin.claude_oauth_manual_invalid" = "認証コードが見つかりませんでした。ブラウザのアドレスバーの完全なリンクをコピーして、もう一度お試しください。";
+
+// MARK: - Accounts Overview (feat/multi-account-overview)
+"accounts.overview_title" = "Claude アカウント";
+"accounts.toggle_to_overview" = "すべてのアカウントを表示";
+"accounts.toggle_to_detail" = "アカウント詳細を表示";
+"accounts.current_badge" = "現在";
+"accounts.status_active" = "利用可能";
+"accounts.status_exhausted" = "クォータ超過";
+"accounts.status_invalid" = "サインインが必要";
+"accounts.status_unavailable" = "一時的に利用不可";
+"accounts.status_not_configured" = "未設定";
+"accounts.summary_available" = "利用可能";
+"accounts.summary_exhausted" = "超過";
+"accounts.summary_attention" = "要確認";

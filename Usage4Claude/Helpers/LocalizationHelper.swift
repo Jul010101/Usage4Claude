@@ -53,6 +53,22 @@ enum L {
         static var addCodexAccount: String { localized("account.add_codex_account") }
         static var codexCurrentAccount: String { localized("account.codex_current_account") }
     }
+
+    // MARK: - Accounts Overview (feat/multi-account-overview)
+    enum Accounts {
+        static var overviewTitle: String { localized("accounts.overview_title") }
+        static var toggleToOverview: String { localized("accounts.toggle_to_overview") }
+        static var toggleToDetail: String { localized("accounts.toggle_to_detail") }
+        static var currentBadge: String { localized("accounts.current_badge") }
+        static var statusActive: String { localized("accounts.status_active") }
+        static var statusExhausted: String { localized("accounts.status_exhausted") }
+        static var statusInvalid: String { localized("accounts.status_invalid") }
+        static var statusUnavailable: String { localized("accounts.status_unavailable") }
+        static var statusNotConfigured: String { localized("accounts.status_not_configured") }
+        static var summaryAvailable: String { localized("accounts.summary_available") }
+        static var summaryExhausted: String { localized("accounts.summary_exhausted") }
+        static var summaryAttention: String { localized("accounts.summary_attention") }
+    }
     
     // MARK: - Usage Detail View
     enum Usage {
