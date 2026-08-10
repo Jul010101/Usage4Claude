@@ -44,6 +44,12 @@ class DataRefreshManager: ObservableObject {
     @Published var claudeUsageError: UsageError?
     /// Codex 错误消息（独立于 Claude，避免双 Provider 时被静默隐藏）
     @Published var codexErrorMessage: String?
+    /// Typed Codex usage error, kept in lockstep with `codexErrorMessage` for callers
+    /// (e.g. the multi-account overview) that need type-safe classification instead of
+    /// matching against the localized string. Cleared/set alongside every current-Codex
+    /// fetch-state transition (see `clearCodexUsageState`, `processCodexSuccess`,
+    /// `fetchUsage`, `fetchCodexOnly`, `markCodexNeedsRelogin`).
+    @Published var codexUsageError: UsageError?
     /// 刷新状态管理器
     let refreshState = RefreshState()
 
@@ -132,6 +138,7 @@ class DataRefreshManager: ObservableObject {
         errorMessage = nil
         claudeUsageError = nil
         codexErrorMessage = nil
+        codexUsageError = nil
         lastAPIFetchTime = Date()
 
         let fetchClaude = shouldFetchClaudeUsage
@@ -184,6 +191,7 @@ class DataRefreshManager: ObservableObject {
                         self.attemptTokenRefreshAndRetry()
                     } else {
                         self.codexErrorMessage = error.localizedDescription
+                        self.codexUsageError = (error as? UsageError) ?? .networkError
                         self.clearCodexUsageState(clearError: false)
                     }
 
@@ -241,6 +249,7 @@ class DataRefreshManager: ObservableObject {
         codexUsageData = nil
         if clearError {
             codexErrorMessage = nil
+            codexUsageError = nil
         }
         lastCodexResetsAt = nil
         cancelCodexResetVerification()
@@ -515,6 +524,7 @@ class DataRefreshManager: ObservableObject {
         }
         isLoading = true
         codexErrorMessage = nil
+        codexUsageError = nil
         lastAPIFetchTime = Date()
 
         codexApiService.fetchUsage { [weak self] result in
@@ -533,6 +543,7 @@ class DataRefreshManager: ObservableObject {
                         self.attemptTokenRefreshAndRetry()
                     } else {
                         self.codexErrorMessage = error.localizedDescription
+                        self.codexUsageError = (error as? UsageError) ?? .networkError
                         self.clearCodexUsageState(clearError: false)
                         Logger.menuBar.info("Codex 请求失败: \(error.localizedDescription)")
                     }
@@ -545,6 +556,7 @@ class DataRefreshManager: ObservableObject {
         let previousCodexData = codexUsageData
         codexUsageData = data
         codexErrorMessage = nil
+        codexUsageError = nil
         if let utilization = monitoringUtilization(for: data) {
             settings.updateSmartMonitoringMode(providerUtilizations: [.codex: utilization])
         }
@@ -652,6 +664,7 @@ class DataRefreshManager: ObservableObject {
             }
         }
         codexErrorMessage = UsageError.sessionExpired.localizedDescription
+        codexUsageError = .sessionExpired
         clearCodexUsageState(clearError: false)
         Logger.menuBar.error("Codex 三级刷新均已失败，需要用户重新登录")
     }
