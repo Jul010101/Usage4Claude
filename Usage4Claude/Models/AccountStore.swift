@@ -17,6 +17,12 @@ final class AccountStore: ObservableObject {
 
     private let defaults = UserDefaults.standard
     private let keychain = KeychainManager.shared
+    /// Preserve mutation order when rapid OAuth rotations create several
+    /// account snapshots that must be persisted asynchronously.
+    private let persistenceQueue = DispatchQueue(
+        label: "com.usage4claude.account-persistence",
+        qos: .userInitiated
+    )
 
     // MARK: - Claude 账户
 
@@ -215,7 +221,7 @@ final class AccountStore: ObservableObject {
     private func saveAccounts() {
         // 在调用线程（主线程）快照，避免后台队列直接读取主线程持有的可变数组造成数据竞争
         let snapshot = accounts
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        persistenceQueue.async { [weak self] in
             self?.keychain.saveAccounts(snapshot)
         }
     }
@@ -298,12 +304,22 @@ final class AccountStore: ObservableObject {
         Logger.settings.notice("Claude session-token 已静默更新（自动续期）")
     }
 
+    /// 静默更新指定账户（按 UUID 定向）的 Claude session-token（不触发 accountChanged 通知）
+    /// 用于多账户总览场景的 OAuth refresh_token 轮换写回——目标账户不一定是当前账户，
+    /// 因此不能复用只认 currentAccountId 的 silentlyUpdateCurrentClaudeSessionToken。
+    func silentlyUpdateClaudeSessionToken(_ token: String, forAccountId accountId: UUID) {
+        guard let index = accounts.firstIndex(where: { $0.id == accountId }) else { return }
+        guard accounts[index].sessionKey != token else { return }
+        accounts[index].sessionKey = token
+        Logger.settings.notice("Claude session-token 已静默更新（账户 ID 定向，自动续期）")
+    }
+
     // MARK: - Codex Account Management
 
     private func saveCodexAccounts() {
         // 在调用线程（主线程）快照，避免后台队列直接读取主线程持有的可变数组造成数据竞争
         let snapshot = codexAccounts
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        persistenceQueue.async { [weak self] in
             self?.keychain.saveCodexAccounts(snapshot)
         }
     }
