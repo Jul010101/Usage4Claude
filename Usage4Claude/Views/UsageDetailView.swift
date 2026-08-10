@@ -25,6 +25,13 @@ struct UsageDetailView: View {
     @Binding var hasAvailableUpdate: Bool
     /// 是否应显示更新徽章（用户未确认时才显示徽章）
     @Binding var shouldShowUpdateBadge: Bool
+    /// 多账户总览模型（feat/multi-account-overview）：MenuBarManager 持有的稳定实例，
+    /// 基于 accountStore + dataManager 构建。本视图只读展示，从不修改
+    /// currentAccountId，账户行点击也不会触发账户切换。
+    @ObservedObject var overviewModel: MultiAccountOverviewModel
+    /// 是否展示多账户总览（而非常规详情视图）。初始值在自定义 init 中按账户数量设置；
+    /// 用户可通过 person.2 / person.crop.circle 按钮手动切换。
+    @State private var showAccountsOverview: Bool
 
     /// 加载动画效果类型
     enum LoadingAnimationType: Int, CaseIterable {
@@ -77,6 +84,35 @@ struct UsageDetailView: View {
     @AppStorage("showRemainingMode") private var savedRemainingMode = false
     @State private var showRemainingMode = UserDefaults.standard.bool(forKey: "showRemainingMode")
     @State private var remainingModeAnimationTrigger = 0
+
+    // MARK: - Init
+
+    init(
+        usageData: Binding<UsageData?>,
+        codexUsageData: Binding<CodexUsageData?>,
+        errorMessage: Binding<String?>,
+        codexErrorMessage: Binding<String?>,
+        codexNeedsRelogin: Binding<Bool>,
+        refreshState: RefreshState,
+        onMenuAction: ((MenuAction) -> Void)? = nil,
+        hasAvailableUpdate: Binding<Bool>,
+        shouldShowUpdateBadge: Binding<Bool>,
+        overviewModel: MultiAccountOverviewModel
+    ) {
+        self._usageData = usageData
+        self._codexUsageData = codexUsageData
+        self._errorMessage = errorMessage
+        self._codexErrorMessage = codexErrorMessage
+        self._codexNeedsRelogin = codexNeedsRelogin
+        self.refreshState = refreshState
+        self.onMenuAction = onMenuAction
+        self._hasAvailableUpdate = hasAvailableUpdate
+        self._shouldShowUpdateBadge = shouldShowUpdateBadge
+        self.overviewModel = overviewModel
+        // 每次弹出窗口新建该视图（openPopover 会重建 UsageDetailView）时，
+        // 账户数 >1 就默认展示总览；用户之后可手动切回详情。
+        _showAccountsOverview = State(initialValue: overviewModel.rows.count > 1)
+    }
     
     // MARK: - Body
 
@@ -188,6 +224,33 @@ struct UsageDetailView: View {
             return codexOnlyHeight
         }
         return dynamicHeight
+    }
+
+    // MARK: - Accounts Overview Sizing
+
+    private var isAccountsOverviewActive: Bool {
+        showAccountsOverview && overviewModel.rows.count > 1
+    }
+
+    private var accountsOverviewWidth: CGFloat { 320 }
+
+    private var accountsOverviewHeight: CGFloat {
+        let rowHeight: CGFloat = 54
+        let rowSpacing: CGFloat = 6
+        let headerBlockHeight: CGFloat = 20 + 10 + 16 // header row + spacing + summary row
+        let verticalPadding: CGFloat = 14 + 12 + 10 // top + bottom + spacing before rows list
+        let rowsCount = max(overviewModel.rows.count, 1)
+        let rowsHeight = CGFloat(rowsCount) * rowHeight + CGFloat(max(0, rowsCount - 1)) * rowSpacing
+        return headerBlockHeight + verticalPadding + rowsHeight
+    }
+
+    private var accountsOverviewBody: some View {
+        AccountsOverviewView(
+            model: overviewModel,
+            refreshState: refreshState,
+            onToggleDetail: { showAccountsOverview = false },
+            onRefresh: { onMenuAction?(.refresh) }
+        )
     }
 
     @ViewBuilder
@@ -420,6 +483,19 @@ struct UsageDetailView: View {
     /// 刷新按钮 + 三点菜单按钮（共用于单列和双列头部）
     @ViewBuilder
     private var refreshAndMenuButtons: some View {
+        if overviewModel.rows.count > 1 {
+            Button(action: { showAccountsOverview = true }) {
+                Image(systemName: "person.2")
+                    .font(.system(size: 14))
+                    .foregroundColor(.secondary)
+                    .frame(width: 20, height: 20)
+            }
+            .buttonStyle(.plain)
+            .focusable(false)
+            .help(L.Accounts.toggleToOverview)
+            .accessibilityLabel(L.Accounts.toggleToOverview)
+        }
+
         Button(action: { onMenuAction?(.refresh) }) {
             Image(systemName: "arrow.clockwise")
                 .font(.system(size: 14))
@@ -766,7 +842,9 @@ struct UsageDetailView: View {
 
     var body: some View {
         Group {
-            if isMultiProviderActive {
+            if isAccountsOverviewActive {
+                accountsOverviewBody
+            } else if isMultiProviderActive {
                 multiProviderBody(codex: codexUsageData)
             } else if isCodexOnlyActive {
                 codexOnlyBody(codex: codexUsageData)
@@ -774,10 +852,14 @@ struct UsageDetailView: View {
                 singleProviderBody
             }
         }
-        .frame(width: contentWidth, height: contentHeight)
+        .frame(
+            width: isAccountsOverviewActive ? accountsOverviewWidth : contentWidth,
+            height: isAccountsOverviewActive ? accountsOverviewHeight : contentHeight
+        )
         .animation(.easeInOut(duration: 0.25), value: isMultiProviderActive)
         .animation(.easeInOut(duration: 0.25), value: isCodexOnlyActive)
         .animation(.easeInOut(duration: 0.25), value: showAnimationTypeHint)
+        .animation(.easeInOut(duration: 0.25), value: isAccountsOverviewActive)
         .id(localization.updateTrigger)  // 语言变化时重新创建视图
         .onAppear {
             var transaction = Transaction(animation: nil)
@@ -884,6 +966,11 @@ struct UsageDetailView_Previews: PreviewProvider {
     @StateObject static var refreshState = RefreshState()
     @State static var hasUpdate = false
     @State static var shouldShowBadge = false
+    static var overviewModel: MultiAccountOverviewModel = {
+        MainActor.assumeIsolated {
+            MultiAccountOverviewModel(accountStore: AccountStore(), dataRefreshManager: DataRefreshManager())
+        }
+    }()
 
     static var previews: some View {
         UsageDetailView(
@@ -894,7 +981,8 @@ struct UsageDetailView_Previews: PreviewProvider {
             codexNeedsRelogin: $codexNeedsRelogin,
             refreshState: refreshState,
             hasAvailableUpdate: $hasUpdate,
-            shouldShowUpdateBadge: $shouldShowBadge
+            shouldShowUpdateBadge: $shouldShowBadge,
+            overviewModel: overviewModel
         )
     }
 }
