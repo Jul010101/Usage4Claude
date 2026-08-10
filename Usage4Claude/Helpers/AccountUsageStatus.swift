@@ -192,4 +192,39 @@ enum AccountHealthClassifier {
     static func summary(failure reason: AccountUsageFailureReason) -> AccountUsageSummary {
         AccountUsageSummary(health: health(for: reason), fiveHour: nil, sevenDay: nil)
     }
+
+    /// Maps an authoritative `AccountAvailability` (as produced by
+    /// `AccountAvailabilityClassifier`) to a display `AccountHealth` for the
+    /// overview UI. A live (non-stale) fetch's availability is always
+    /// `.availableNow` or `.blocked` — see `AccountAvailabilityClassifier`'s
+    /// Claude/Codex classifiers, which only ever return `.unknown` for a stale,
+    /// failed, or credential-less classification, never for a fresh successful
+    /// one — so `.unknown` here only arises defensively and reads as a
+    /// transient failure rather than silently defaulting to `.active`.
+    static func health(for availability: AccountAvailability) -> AccountHealth {
+        switch availability {
+        case .availableNow:
+            return .active
+        case .blocked:
+            return .exhausted
+        case .unknown:
+            return .temporaryFailure
+        }
+    }
+
+    /// Adapts a successful Codex fetch into the same provider-neutral
+    /// `AccountUsageSummary` shape Claude rows use, without altering any window
+    /// percentage or reset date — `CodexUsageData.LimitData.asUsageLimitData()`
+    /// is a pure field copy. `health` is derived from `availability`, which the
+    /// caller must have already computed via
+    /// `AccountAvailabilityClassifier.codexAvailability` (server
+    /// `allowed`/`limitReached` authoritative), so display health and
+    /// authoritative availability never disagree for the same fetch.
+    static func summary(codexData: CodexUsageData, availability: AccountAvailability) -> AccountUsageSummary {
+        AccountUsageSummary(
+            health: health(for: availability),
+            fiveHour: codexData.primary.map { AccountLimitSummary($0.asUsageLimitData()) },
+            sevenDay: codexData.secondary.map { AccountLimitSummary($0.asUsageLimitData()) }
+        )
+    }
 }
