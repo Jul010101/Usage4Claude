@@ -72,6 +72,8 @@ struct AccountOverviewRow: View {
                         .font(.system(size: 13, weight: .semibold))
                         .lineLimit(1)
 
+                    ProviderBadge(provider: row.provider)
+
                     if isCurrent {
                         Text(L.Accounts.currentBadge)
                             .font(.system(size: 9, weight: .bold))
@@ -144,7 +146,7 @@ struct AccountOverviewRow: View {
     }
 
     private var accessibilityText: String {
-        var parts: [String] = [row.account.displayName]
+        var parts: [String] = [row.account.displayName, row.provider.localizedLabel]
         if isCurrent {
             parts.append(L.Accounts.currentBadge)
         }
