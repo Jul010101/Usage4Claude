@@ -450,3 +450,9 @@
 "accounts.summary_available" = "사용 가능";
 "accounts.summary_exhausted" = "소진됨";
 "accounts.summary_attention" = "확인 필요";
+"accounts.next_access_title" = "다음 사용 가능";
+"accounts.next_access_available_now" = "지금 사용 가능";
+"accounts.next_access_resumes_at" = "%@ 에 재개";
+"accounts.next_access_unknown" = "현재 사용 가능 여부를 알 수 없음";
+"accounts.provider_claude" = "Claude";
+"accounts.provider_codex" = "Codex";

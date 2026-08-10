@@ -449,3 +449,9 @@
 "accounts.summary_available" = "Verfügbar";
 "accounts.summary_exhausted" = "Aufgebraucht";
 "accounts.summary_attention" = "Handlung erforderlich";
+"accounts.next_access_title" = "Nächste Verfügbarkeit";
+"accounts.next_access_available_now" = "Jetzt verfügbar";
+"accounts.next_access_resumes_at" = "Wieder verfügbar um %@";
+"accounts.next_access_unknown" = "Verfügbarkeit derzeit unbekannt";
+"accounts.provider_claude" = "Claude";
+"accounts.provider_codex" = "Codex";

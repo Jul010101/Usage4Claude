@@ -450,3 +450,9 @@
 "accounts.summary_available" = "利用可能";
 "accounts.summary_exhausted" = "超過";
 "accounts.summary_attention" = "要確認";
+"accounts.next_access_title" = "次に利用可能";
+"accounts.next_access_available_now" = "今すぐ利用可能";
+"accounts.next_access_resumes_at" = "%@ に再開";
+"accounts.next_access_unknown" = "現在、利用可否は不明です";
+"accounts.provider_claude" = "Claude";
+"accounts.provider_codex" = "Codex";

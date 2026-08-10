@@ -450,3 +450,9 @@
 "accounts.summary_available" = "可用";
 "accounts.summary_exhausted" = "已用完";
 "accounts.summary_attention" = "需要关注";
+"accounts.next_access_title" = "下一个可用";
+"accounts.next_access_available_now" = "现在可用";
+"accounts.next_access_resumes_at" = "%@ 恢复可用";
+"accounts.next_access_unknown" = "暂时无法确定可用情况";
+"accounts.provider_claude" = "Claude";
+"accounts.provider_codex" = "Codex";

@@ -450,3 +450,9 @@
 "accounts.summary_available" = "Disponibles";
 "accounts.summary_exhausted" = "Épuisés";
 "accounts.summary_attention" = "À vérifier";
+"accounts.next_access_title" = "Prochaine disponibilité";
+"accounts.next_access_available_now" = "Disponible maintenant";
+"accounts.next_access_resumes_at" = "Disponible à nouveau à %@";
+"accounts.next_access_unknown" = "Disponibilité inconnue pour l'instant";
+"accounts.provider_claude" = "Claude";
+"accounts.provider_codex" = "Codex";
