@@ -234,14 +234,28 @@ struct UsageDetailView: View {
 
     private var accountsOverviewWidth: CGFloat { 320 }
 
+    /// Mirrors `AccountsOverviewView`'s actual layout exactly: header (20) +
+    /// next-access card (`nextAccessCardHeight`) + summary row (16), each
+    /// separated by the body `VStack`'s own 10pt spacing (3 gaps), plus the
+    /// view's own top/bottom padding, plus the rows `ScrollView` capped at
+    /// `maxVisibleRows` (`rowsViewportHeight` there uses the identical formula).
+    /// Row height/spacing/cap/card-height constants are read from
+    /// `AccountsOverviewView` itself so the two never drift apart.
     private var accountsOverviewHeight: CGFloat {
-        let rowHeight: CGFloat = 54
-        let rowSpacing: CGFloat = 6
-        let headerBlockHeight: CGFloat = 20 + 10 + 16 // header row + spacing + summary row
-        let verticalPadding: CGFloat = 14 + 12 + 10 // top + bottom + spacing before rows list
-        let rowsCount = max(overviewModel.rows.count, 1)
-        let rowsHeight = CGFloat(rowsCount) * rowHeight + CGFloat(max(0, rowsCount - 1)) * rowSpacing
-        return headerBlockHeight + verticalPadding + rowsHeight
+        let headerHeight: CGFloat = 20
+        let summaryRowHeight: CGFloat = 16
+        let interChildSpacing: CGFloat = 10
+        let interChildGapCount: CGFloat = 3 // header→next-access, next-access→summary, summary→rows
+        let verticalPadding: CGFloat = 14 + 12 // top + bottom
+        let rowsCount = min(max(overviewModel.rows.count, 1), AccountsOverviewView.maxVisibleRows)
+        let rowsHeight = CGFloat(rowsCount) * AccountsOverviewView.rowHeight
+            + CGFloat(max(0, rowsCount - 1)) * AccountsOverviewView.rowSpacing
+        return headerHeight
+            + AccountsOverviewView.nextAccessCardHeight
+            + summaryRowHeight
+            + interChildGapCount * interChildSpacing
+            + verticalPadding
+            + rowsHeight
     }
 
     private var accountsOverviewBody: some View {

@@ -14,7 +14,10 @@
 //  `.refresh` menu action) and by MenuBarManager on popover open/close.
 //
 //  Uses a plain VStack (not List) so it sizes exactly to its content — SwiftUI
-//  List insets/backgrounds don't match this app's compact popover chrome.
+//  List insets/backgrounds don't match this app's compact popover chrome. The
+//  account rows themselves live in a bounded `ScrollView` (see `rowsList`) so
+//  a large account count scrolls instead of growing the popover unbounded,
+//  while the header/next-access card/summary row above it always stay put.
 //
 
 import SwiftUI
@@ -24,6 +27,17 @@ struct AccountsOverviewView: View {
     @ObservedObject var refreshState: RefreshState
     var onToggleDetail: () -> Void
     var onRefresh: () -> Void
+
+    /// Row height/spacing/visible-row cap shared with `UsageDetailView.accountsOverviewHeight`
+    /// so the popover's outer `.frame(height:)` always matches this view's actual
+    /// capped layout exactly — no clipping, no dead space below a short account list.
+    static let rowHeight: CGFloat = 54
+    static let rowSpacing: CGFloat = 6
+    static let maxVisibleRows: Int = 5
+    /// Matches `nextAccessCard`'s fixed layout (title + name/badge line + status
+    /// line, each capped to one line) so the card's height never varies across
+    /// its three presentations (available now / blocked / unknown).
+    static let nextAccessCardHeight: CGFloat = 68
 
     private var availableCount: Int {
         model.rows.filter { $0.health == .active }.count
@@ -47,15 +61,49 @@ struct AccountsOverviewView: View {
         }.count
     }
 
+    /// Display presentation for `model.nextAvailableRow`, mirrored 1:1 from its
+    /// `AccountAvailability` so this view never recomputes selection — it only
+    /// decides how to present what the model already selected via
+    /// `AccountAvailabilityClassifier.selectNextAvailable`. That selector only
+    /// ever returns a row that's `.availableNow` or `.blocked(until: <known
+    /// date>)`, but `.unknown` / `.blocked(until: nil)` are still handled
+    /// defensively below so an honest "unknown" message shows rather than ever
+    /// fabricating a date.
+    private enum NextAccessPresentation {
+        case availableNow(row: MultiAccountOverviewModel.Row)
+        case blocked(row: MultiAccountOverviewModel.Row, until: Date)
+        case unknown
+    }
+
+    private var nextAccessPresentation: NextAccessPresentation {
+        guard let row = model.nextAvailableRow else { return .unknown }
+        switch row.availability {
+        case .availableNow:
+            return .availableNow(row: row)
+        case .blocked(let until):
+            guard let until else { return .unknown }
+            return .blocked(row: row, until: until)
+        case .unknown:
+            return .unknown
+        }
+    }
+
+    /// Claude and Codex keep independent "current account" pointers in
+    /// `AccountStore`, so a row's "current" badge must compare against the
+    /// pointer matching its own provider, not always the Claude one.
+    private func isCurrentRow(_ row: MultiAccountOverviewModel.Row) -> Bool {
+        switch row.provider {
+        case .claude: return row.id == model.currentAccountId
+        case .codex: return row.id == model.currentCodexAccountId
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             header
+            nextAccessCard
             summaryRow
-            VStack(spacing: 6) {
-                ForEach(model.rows) { row in
-                    AccountOverviewRow(row: row, isCurrent: row.account.id == model.currentAccountId)
-                }
-            }
+            rowsList
         }
         .padding(.horizontal, 14)
         .padding(.top, 14)
@@ -125,6 +173,129 @@ struct AccountsOverviewView: View {
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
         }
+    }
+
+    // MARK: - Next Access Card
+
+    private var nextAccessCard: some View {
+        let presentation = nextAccessPresentation
+        return HStack(alignment: .top, spacing: 10) {
+            ZStack {
+                Circle().fill(nextAccessColor(presentation).opacity(0.15))
+                Image(systemName: nextAccessIcon(presentation))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(nextAccessColor(presentation))
+            }
+            .frame(width: 28, height: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(L.Accounts.nextAccessTitle)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(.secondary)
+
+                switch presentation {
+                case .availableNow(let row):
+                    HStack(spacing: 6) {
+                        Text(row.account.displayName)
+                            .font(.system(size: 13, weight: .semibold))
+                            .lineLimit(1)
+                        ProviderBadge(provider: row.provider)
+                    }
+                    Text(L.Accounts.nextAccessAvailableNow)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.green)
+                        .lineLimit(1)
+
+                case .blocked(let row, let until):
+                    HStack(spacing: 6) {
+                        Text(row.account.displayName)
+                            .font(.system(size: 13, weight: .semibold))
+                            .lineLimit(1)
+                        ProviderBadge(provider: row.provider)
+                    }
+                    Text(L.Accounts.nextAccessResumesAt(until.formattedCompactResetTime))
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+
+                case .unknown:
+                    Text(L.Accounts.nextAccessUnknown)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(minHeight: Self.nextAccessCardHeight, alignment: .top)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.accentColor.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(nextAccessAccessibilityText(presentation))
+    }
+
+    private func nextAccessIcon(_ presentation: NextAccessPresentation) -> String {
+        switch presentation {
+        case .availableNow: return "checkmark.circle.fill"
+        case .blocked: return "clock.fill"
+        case .unknown: return "questionmark.circle.fill"
+        }
+    }
+
+    private func nextAccessColor(_ presentation: NextAccessPresentation) -> Color {
+        switch presentation {
+        case .availableNow: return .green
+        case .blocked: return .orange
+        case .unknown: return .secondary
+        }
+    }
+
+    private func nextAccessAccessibilityText(_ presentation: NextAccessPresentation) -> String {
+        var parts: [String] = [L.Accounts.nextAccessTitle]
+        switch presentation {
+        case .availableNow(let row):
+            parts.append(row.account.displayName)
+            parts.append(row.provider.localizedLabel)
+            parts.append(L.Accounts.nextAccessAvailableNow)
+        case .blocked(let row, let until):
+            parts.append(row.account.displayName)
+            parts.append(row.provider.localizedLabel)
+            parts.append(L.Accounts.nextAccessResumesAt(until.formattedCompactResetTime))
+        case .unknown:
+            parts.append(L.Accounts.nextAccessUnknown)
+        }
+        return parts.joined(separator: ", ")
+    }
+
+    // MARK: - Rows (bounded scroll)
+
+    /// Caps the visible viewport to `maxVisibleRows` rows: for account counts at
+    /// or below the cap this equals the rows' exact natural height (no dead
+    /// space, no scroll indicator), and above the cap it bounds the `ScrollView`
+    /// so the header/next-access card/summary row always stay visible.
+    private var rowsViewportHeight: CGFloat {
+        let count = max(min(model.rows.count, Self.maxVisibleRows), 1)
+        return CGFloat(count) * Self.rowHeight + CGFloat(max(0, count - 1)) * Self.rowSpacing
+    }
+
+    private var rowsList: some View {
+        ScrollView {
+            LazyVStack(spacing: Self.rowSpacing) {
+                ForEach(model.rows) { row in
+                    AccountOverviewRow(row: row, isCurrent: isCurrentRow(row))
+                }
+            }
+        }
+        .frame(maxHeight: rowsViewportHeight)
     }
 }
 
