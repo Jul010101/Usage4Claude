@@ -24,8 +24,12 @@ struct ProviderBadge: View {
             .lineLimit(1)
             .padding(.horizontal, 5)
             .padding(.vertical, 1)
-            .background(provider.accentColor.opacity(0.15))
+            .background(provider.accentColor.opacity(0.22))
             .foregroundColor(provider.accentColor)
             .cornerRadius(4)
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(provider.accentColor.opacity(0.5), lineWidth: 0.75)
+            )
     }
 }
