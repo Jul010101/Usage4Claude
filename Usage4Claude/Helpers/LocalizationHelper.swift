@@ -76,6 +76,16 @@ enum L {
         static var nextAccessUnknown: String { localized("accounts.next_access_unknown") }
         static var providerClaude: String { localized("accounts.provider_claude") }
         static var providerCodex: String { localized("accounts.provider_codex") }
+        static func usableAgain(_ time: String) -> String {
+            String(format: localized("accounts.usable_again"), time)
+        }
+        static func percentLeft(_ percent: String) -> String {
+            String(format: localized("accounts.percent_left"), percent)
+        }
+        static func percentLeftRenews(_ percent: String, _ time: String) -> String {
+            String(format: localized("accounts.percent_left_renews"), percent, time)
+        }
+        static var resetTimeUnknown: String { localized("accounts.reset_time_unknown") }
     }
     
     // MARK: - Usage Detail View

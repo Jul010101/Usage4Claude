@@ -438,21 +438,25 @@
 "weblogin.claude_oauth_manual_invalid" = "無法從貼上的內容中找到授權碼。請複製瀏覽器網址列的完整連結後重試。";
 
 // MARK: - Accounts Overview (feat/multi-account-overview)
-"accounts.overview_title" = "Claude 帳戶";
+"accounts.overview_title" = "AI 帳戶";
 "accounts.toggle_to_overview" = "顯示所有帳戶";
 "accounts.toggle_to_detail" = "顯示帳戶詳情";
 "accounts.current_badge" = "目前";
 "accounts.status_active" = "可用";
-"accounts.status_exhausted" = "額度已用完";
+"accounts.status_exhausted" = "未啟用";
 "accounts.status_invalid" = "需要重新登入";
 "accounts.status_unavailable" = "暫時無法使用";
 "accounts.status_not_configured" = "尚未設定";
 "accounts.summary_available" = "可用";
-"accounts.summary_exhausted" = "已用完";
-"accounts.summary_attention" = "需要留意";
+"accounts.summary_exhausted" = "未啟用";
+"accounts.summary_attention" = "留意";
 "accounts.next_access_title" = "下一個可用";
 "accounts.next_access_available_now" = "現在可用";
 "accounts.next_access_resumes_at" = "%@ 恢復可用";
 "accounts.next_access_unknown" = "暫時無法確定可用情況";
 "accounts.provider_claude" = "Claude";
-"accounts.provider_codex" = "Codex";
+"accounts.provider_codex" = "ChatGPT";
+"accounts.usable_again" = "%@ 可再次使用";
+"accounts.percent_left" = "剩餘 %@";
+"accounts.reset_time_unknown" = "重置時間未知";
+"accounts.percent_left_renews" = "剩餘 %@ · %@ 更新";
