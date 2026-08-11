@@ -438,21 +438,25 @@
 "weblogin.claude_oauth_manual_invalid" = "No authorization code found. Copy the full link from your browser's address bar and try again.";
 
 // MARK: - Accounts Overview (feat/multi-account-overview)
-"accounts.overview_title" = "Claude Accounts";
+"accounts.overview_title" = "AI Accounts";
 "accounts.toggle_to_overview" = "Show All Accounts";
 "accounts.toggle_to_detail" = "Show Account Detail";
 "accounts.current_badge" = "Current";
 "accounts.status_active" = "Active";
-"accounts.status_exhausted" = "Quota Exhausted";
+"accounts.status_exhausted" = "Inactive";
 "accounts.status_invalid" = "Sign In Needed";
 "accounts.status_unavailable" = "Temporarily Unavailable";
 "accounts.status_not_configured" = "Not Configured";
 "accounts.summary_available" = "Available";
-"accounts.summary_exhausted" = "Exhausted";
-"accounts.summary_attention" = "Needs Attention";
+"accounts.summary_exhausted" = "Inactive";
+"accounts.summary_attention" = "Attention";
 "accounts.next_access_title" = "Next Available";
 "accounts.next_access_available_now" = "Available now";
 "accounts.next_access_resumes_at" = "Resumes at %@";
 "accounts.next_access_unknown" = "Availability unknown right now";
 "accounts.provider_claude" = "Claude";
-"accounts.provider_codex" = "Codex";
+"accounts.provider_codex" = "ChatGPT";
+"accounts.usable_again" = "Usable again %@";
+"accounts.percent_left" = "%@ left";
+"accounts.reset_time_unknown" = "Reset time unknown";
+"accounts.percent_left_renews" = "%@ left · renews %@";

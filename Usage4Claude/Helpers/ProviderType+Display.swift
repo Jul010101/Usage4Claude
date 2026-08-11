@@ -23,13 +23,17 @@ extension ProviderType {
         }
     }
 
-    /// Accent color used to visually distinguish provider badges, matching the
-    /// color already established for account selection in
-    /// `AuthSettingsView.accountRow` (Claude = system blue, Codex = teal).
+    /// Accent color used to visually distinguish provider badges. Claude =
+    /// system blue. Codex/ChatGPT was previously a teal that read low-
+    /// contrast on the dark popover and sat too close to the green "Active"
+    /// status color, so it's a distinct indigo/purple instead — deliberately
+    /// outside the green/teal/orange/red palette reserved for account
+    /// health/status, so provider identity and account status are never
+    /// confusable at a glance (feat/overview-ux-polish).
     var accentColor: Color {
         switch self {
         case .claude: return .blue
-        case .codex: return Color(red: 45 / 255.0, green: 212 / 255.0, blue: 191 / 255.0)
+        case .codex: return Color(red: 88 / 255.0, green: 86 / 255.0, blue: 214 / 255.0)
         }
     }
 }
