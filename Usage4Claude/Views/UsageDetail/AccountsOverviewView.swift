@@ -31,9 +31,14 @@ struct AccountsOverviewView: View {
     /// Row height/spacing/visible-row cap shared with `UsageDetailView.accountsOverviewHeight`
     /// so the popover's outer `.frame(height:)` always matches this view's actual
     /// capped layout exactly — no clipping, no dead space below a short account list.
-    static let rowHeight: CGFloat = 54
-    static let rowSpacing: CGFloat = 6
-    static let maxVisibleRows: Int = 5
+    /// `rowHeight` fits the row's 2 visual lines (name+badges+status word, then
+    /// one short secondary line: percent-left / usable-again date / attention
+    /// reason). `maxVisibleRows` is 12 so a realistic account count (the user's
+    /// current 4 active + 2 inactive, and headroom well beyond that) renders
+    /// scroll-free — the `ScrollView` below only kicks in past that cap.
+    static let rowHeight: CGFloat = 48
+    static let rowSpacing: CGFloat = 4
+    static let maxVisibleRows: Int = 12
     /// Matches `nextAccessCard`'s fixed layout (title + name/badge line + status
     /// line, each capped to one line) so the card's height never varies across
     /// its three presentations (available now / blocked / unknown).
@@ -164,6 +169,9 @@ struct AccountsOverviewView: View {
         .accessibilityElement(children: .combine)
     }
 
+    /// Each badge is `.lineLimit(1).fixedSize()` so the summary row is
+    /// guaranteed to render as a single line, never wrapping its count+label
+    /// pair onto two lines regardless of available width.
     private func summaryBadge(count: Int, label: String, color: Color) -> some View {
         HStack(spacing: 4) {
             Circle().fill(color).frame(width: 6, height: 6)
@@ -173,6 +181,8 @@ struct AccountsOverviewView: View {
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
         }
+        .lineLimit(1)
+        .fixedSize()
     }
 
     // MARK: - Next Access Card
@@ -287,10 +297,35 @@ struct AccountsOverviewView: View {
         return CGFloat(count) * Self.rowHeight + CGFloat(max(0, count - 1)) * Self.rowSpacing
     }
 
+    /// Display-only grouping for scannability: available (active) rows
+    /// first, then exhausted, then everything needing attention (invalid
+    /// credentials / temporary failure / no credentials / still loading).
+    /// Stable within each group — ties break on the row's original index in
+    /// `model.rows`, so this never reorders relative to the store beyond the
+    /// group boundaries. Purely a computed view-local copy: never mutates
+    /// `model.rows`, `currentAccountId`, or `nextAvailableRow` selection.
+    private var displayRows: [MultiAccountOverviewModel.Row] {
+        model.rows.enumerated()
+            .sorted { lhs, rhs in
+                let lhsRank = displaySortRank(for: lhs.element.health)
+                let rhsRank = displaySortRank(for: rhs.element.health)
+                if lhsRank != rhsRank { return lhsRank < rhsRank }
+                return lhs.offset < rhs.offset
+            }
+            .map(\.element)
+    }
+
+    private func displaySortRank(for health: AccountHealth?) -> Int {
+        switch health {
+        case .active: return 0
+        case .exhausted: return 1
+        case .invalidCredentials, .temporaryFailure, .noCredentials, .none: return 2
+        }
+    }
     private var rowsList: some View {
         ScrollView {
             LazyVStack(spacing: Self.rowSpacing) {
-                ForEach(model.rows) { row in
+                ForEach(displayRows) { row in
                     AccountOverviewRow(row: row, isCurrent: isCurrentRow(row))
                 }
             }
