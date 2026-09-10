@@ -17,6 +17,8 @@ struct UsageDetailView: View {
     @Binding var codexErrorMessage: String?
     /// Codex 三级刷新均失败，需要用户手动重新登录
     @Binding var codexNeedsRelogin: Bool
+    /// Brand OS quota 快照（feat/brandos-quota，Phase B 插活，本视图暂不渲染，Phase C 添加 UI）
+    @Binding var brandOSQuota: BrandOSQuotaData?
     @ObservedObject var refreshState: RefreshState
     /// 菜单操作回调
     var onMenuAction: ((MenuAction) -> Void)? = nil
@@ -97,7 +99,8 @@ struct UsageDetailView: View {
         onMenuAction: ((MenuAction) -> Void)? = nil,
         hasAvailableUpdate: Binding<Bool>,
         shouldShowUpdateBadge: Binding<Bool>,
-        overviewModel: MultiAccountOverviewModel
+        overviewModel: MultiAccountOverviewModel,
+        brandOSQuota: Binding<BrandOSQuotaData?>
     ) {
         self._usageData = usageData
         self._codexUsageData = codexUsageData
@@ -109,6 +112,7 @@ struct UsageDetailView: View {
         self._hasAvailableUpdate = hasAvailableUpdate
         self._shouldShowUpdateBadge = shouldShowUpdateBadge
         self.overviewModel = overviewModel
+        self._brandOSQuota = brandOSQuota
         // 每次弹出窗口新建该视图（openPopover 会重建 UsageDetailView）时，
         // 账户数 >1 就默认展示总览；用户之后可手动切回详情。
         _showAccountsOverview = State(initialValue: overviewModel.rows.count > 1)
@@ -145,6 +149,30 @@ struct UsageDetailView: View {
             .filter { $0.provider == .codex }
     }
 
+    /// Whether the Brand OS quota section should render: opt-in setting on,
+    /// a snapshot exists, and the watchdog directory was actually readable
+    /// (`.absent` means the daemon has never run — nothing to show).
+    private var isBrandOSVisible: Bool {
+        UserSettings.shared.brandOSQuotaEnabled
+            && brandOSQuota != nil
+            && brandOSQuota?.access != .absent
+    }
+
+    /// Height delta contributed by `brandOSSection` when visible: its own
+    /// intrinsic content (header + up to `BrandOSQuotaSection.maxRowCount`
+    /// rows, each separated by `BrandOSQuotaSection.rowSpacing`) plus one
+    /// extra `contentSpacing` gap — inserting it as a new sibling between
+    /// `updateNotificationView` and the trailing `Spacer()` turns their single
+    /// existing gap into two. Returns 0 (no layout cost) when hidden.
+    private var brandOSSectionHeight: CGFloat {
+        guard isBrandOSVisible else { return 0 }
+        let rows = CGFloat(BrandOSQuotaSection.maxRowCount)
+        let intrinsicHeight = BrandOSQuotaSection.headerHeight
+            + rows * BrandOSQuotaSection.rowHeight
+            + rows * BrandOSQuotaSection.rowSpacing
+        return intrinsicHeight + contentSpacing
+    }
+
     /// 根据活动类型数量计算动态高度（单 Provider 模式）
     private var dynamicHeight: CGFloat {
         let activeCount = activeDisplayTypes.count
@@ -161,7 +189,7 @@ struct UsageDetailView: View {
         let rowCount = activeCount == 1 ? 2 : activeCount
         let textHeight = CGFloat(rowCount) * rowHeight + CGFloat(max(0, rowCount - 1)) * spacing
 
-        return baseHeight + textHeight
+        return baseHeight + textHeight + brandOSSectionHeight
     }
 
     /// Codex-only 模式的动态高度
@@ -173,7 +201,7 @@ struct UsageDetailView: View {
         let rowCount = activeCount == 1 ? 2 : max(activeCount, codexUsageData == nil ? 0 : 1)
         let textHeight = CGFloat(rowCount) * rowHeight + CGFloat(max(0, rowCount - 1)) * spacing
 
-        return baseHeight + textHeight
+        return baseHeight + textHeight + brandOSSectionHeight
     }
 
     /// 双 Provider 模式的动态高度（取两列最大行数）
@@ -200,7 +228,7 @@ struct UsageDetailView: View {
         let rowHeight: CGFloat = 26
         let spacing: CGFloat = 5
         let rowsHeight = CGFloat(maxRows) * rowHeight + CGFloat(max(0, maxRows - 1)) * spacing
-        return 190 + rowsHeight
+        return 190 + rowsHeight + brandOSSectionHeight
     }
 
     private var contentSpacing: CGFloat {
@@ -256,6 +284,35 @@ struct UsageDetailView: View {
             + interChildGapCount * interChildSpacing
             + verticalPadding
             + rowsHeight
+            + accountsOverviewFooterHeight
+    }
+
+    /// Extra height contributed by the accounts-overview footer wrapping
+    /// `brandOSSection` below the account rows — `brandOSSectionHeight`
+    /// covers only the section's own header+rows; `footerChrome` accounts
+    /// for this wrapper's own divider + top/bottom breathing room (see
+    /// `accountsOverviewFooterContent`), which doesn't exist in the other
+    /// three provider bodies. 0 (no layout cost) when hidden.
+    private var accountsOverviewFooterHeight: CGFloat {
+        guard isBrandOSVisible else { return 0 }
+        let footerChrome: CGFloat = 24 // 8pt top padding + 8pt divider↔section spacing + 8pt bottom padding
+        return footerChrome + brandOSSectionHeight
+    }
+
+    /// Fixed footer pinned below the account rows (outside the capped
+    /// `ScrollView` inside `AccountsOverviewView`), so it's always visible
+    /// regardless of scroll position. Height mirrored by
+    /// `accountsOverviewFooterHeight`.
+    @ViewBuilder
+    private var accountsOverviewFooterContent: some View {
+        if isBrandOSVisible {
+            VStack(spacing: 8) {
+                Divider()
+                brandOSSection
+            }
+            .padding(.top, 8)
+            .padding(.bottom, 8)
+        }
     }
 
     private var accountsOverviewBody: some View {
@@ -264,7 +321,9 @@ struct UsageDetailView: View {
             refreshState: refreshState,
             onToggleDetail: { showAccountsOverview = false },
             onRefresh: { onMenuAction?(.refresh) }
-        )
+        ) {
+            accountsOverviewFooterContent
+        }
     }
 
     @ViewBuilder
@@ -680,6 +739,13 @@ struct UsageDetailView: View {
     }
 
     @ViewBuilder
+    private var brandOSSection: some View {
+        if isBrandOSVisible, let data = brandOSQuota {
+            BrandOSQuotaSection(data: data)
+        }
+    }
+
+    @ViewBuilder
     private func codexOnlyMainContent(codex: CodexUsageData?) -> some View {
         if let codex {
             CodexColumnView(
@@ -767,6 +833,7 @@ struct UsageDetailView: View {
 
             animationHintView(for: .claude)
             updateNotificationView
+            brandOSSection
             Spacer()
         }
     }
@@ -781,6 +848,7 @@ struct UsageDetailView: View {
 
             animationHintView(for: .codex)
             updateNotificationView
+            brandOSSection
             Spacer()
         }
     }
@@ -822,6 +890,7 @@ struct UsageDetailView: View {
             }
 
             updateNotificationView
+            brandOSSection
             Spacer()
         }
     }
@@ -980,6 +1049,7 @@ struct UsageDetailView_Previews: PreviewProvider {
     @StateObject static var refreshState = RefreshState()
     @State static var hasUpdate = false
     @State static var shouldShowBadge = false
+    @State static var brandOSQuota: BrandOSQuotaData? = nil
     static var overviewModel: MultiAccountOverviewModel = {
         MainActor.assumeIsolated {
             MultiAccountOverviewModel(accountStore: AccountStore(), dataRefreshManager: DataRefreshManager())
@@ -996,7 +1066,8 @@ struct UsageDetailView_Previews: PreviewProvider {
             refreshState: refreshState,
             hasAvailableUpdate: $hasUpdate,
             shouldShowUpdateBadge: $shouldShowBadge,
-            overviewModel: overviewModel
+            overviewModel: overviewModel,
+            brandOSQuota: $brandOSQuota
         )
     }
 }

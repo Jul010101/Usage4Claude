@@ -25,6 +25,8 @@ class DataRefreshManager: ObservableObject {
     private let timerManager = TimerManager()
     /// 用户设置实例
     private let settings = UserSettings.shared
+    /// Brand OS quota 服务实例（feat/brandos-quota，Phase B）
+    private let brandOSQuotaService = BrandOSQuotaService()
 
     // MARK: - Published State
 
@@ -42,6 +44,8 @@ class DataRefreshManager: ObservableObject {
     /// of every Claude fetch, on success, and on account switch; set on
     /// no-credentials and on any Claude fetch failure that is a `UsageError`.
     @Published var claudeUsageError: UsageError?
+    /// Brand OS quota 快照（feat/brandos-quota，Phase B）：nil 表示功能关闭或未能读到 watchdog 目录
+    @Published var brandOSQuota: BrandOSQuotaData?
     /// Codex 错误消息（独立于 Claude，避免双 Provider 时被静默隐藏）
     @Published var codexErrorMessage: String?
     /// Typed Codex usage error, kept in lockstep with `codexErrorMessage` for callers
@@ -140,6 +144,7 @@ class DataRefreshManager: ObservableObject {
         codexErrorMessage = nil
         codexUsageError = nil
         lastAPIFetchTime = Date()
+        fetchBrandOSQuota()
 
         let fetchClaude = shouldFetchClaudeUsage
         let fetchCodex = shouldFetchCodexUsage
@@ -236,6 +241,15 @@ class DataRefreshManager: ObservableObject {
             }
 
             self.settings.updateSmartMonitoringMode(providerUtilizations: monitoringUtilizations)
+        }
+    }
+
+    /// 拉取 Brand OS quota 快照（feat/brandos-quota，Phase B）：本地文件读取，开销极低，
+    /// 无需像 Claude/Codex 那样提前进行 fetch 可行性判断，直接搭着每次 tick 一起调用。
+    /// 开关关闭时 service.refresh 直接返回 nil，发布值随之清空。
+    func fetchBrandOSQuota() {
+        brandOSQuotaService.refresh(enabled: settings.brandOSQuotaEnabled, notificationsEnabled: settings.notificationsEnabled) { [weak self] data in
+            self?.brandOSQuota = data
         }
     }
 
@@ -375,6 +389,9 @@ class DataRefreshManager: ObservableObject {
                 Logger.menuBar.debug("用户打开界面，已在活跃模式")
             }
         }
+
+        // Brand OS quota 是本地文件读取，开销极低，不受 30秒节流限制，每次打开 popover 都刷新
+        fetchBrandOSQuota()
 
         // 如果距离上次刷新 < 30秒，跳过
         if let lastFetch = lastAPIFetchTime,

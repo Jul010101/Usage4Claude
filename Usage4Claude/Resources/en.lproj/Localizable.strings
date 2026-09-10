@@ -65,6 +65,8 @@
 "settings.general.interface_language" = "Interface Language";
 "settings.general.language_hint" = "Change the interface display language";
 "settings.general.reset_button" = "Reset to Defaults";
+"settings.general.brandos_quota_toggle" = "Show Brand OS Section";
+"settings.general.brandos_quota_description" = "Display Figma seat status, gate queue, and last verdict from the Brand OS quota daemon in the popover.";
 "icon_style.color_translucent" = "Color Translucent";
 "icon_style.color_with_background" = "Color with Background";
 "icon_style.monochrome" = "Monochrome";
@@ -399,6 +401,25 @@
 "notification.reset_body" = "%@ usage has been reset";
 "notification.codex_session_expired_title" = "Codex Session Expired";
 "notification.codex_session_expired_body" = "Please sign in again to continue monitoring your Codex usage.";
+"notification.brandos_gate_title" = "Brand OS";
+"notification.brandos_gate_green_body" = "%@ — GREEN";
+"notification.brandos_gate_red_body" = "%@ — RED";
+"notification.brandos_summary_body" = "%d new gate results";
+
+// MARK: - Brand OS (feat/brandos-quota, Phase C)
+"brandos.title" = "Brand OS";
+"brandos.seat_live" = "Figma seat live";
+"brandos.seat_blocked" = "Figma seat blocked";
+"brandos.daemon_stopped" = "Daemon stopped";
+"brandos.seat_unknown" = "Seat unknown";
+"brandos.queue" = "Queue: %d";
+"brandos.queue_empty" = "Queue empty";
+"brandos.verdict_green" = "GREEN";
+"brandos.verdict_red" = "RED";
+"brandos.verdict_held" = "held — retrying";
+"brandos.verdict_unknown" = "unknown";
+"brandos.access_needed" = "Brand OS: access needed";
+"brandos.grant_access" = "Grant access…";
 
 // MARK: - Web Login (v2.2.0)
 "weblogin.window_title" = "Sign in to Claude";

@@ -28,6 +28,29 @@ struct AccountsOverviewView: View {
     var onToggleDetail: () -> Void
     var onRefresh: () -> Void
 
+    /// Fixed content pinned below the account rows (outside the capped
+    /// `rowsList` `ScrollView`), e.g. the Brand OS quota footer strip.
+    /// Type-erased to `AnyView` so this view itself doesn't need to become
+    /// generic — Swift doesn't support stored `static let` layout constants
+    /// (see `rowHeight` etc. below) on generic types. Only the initializer
+    /// is generic over the footer's concrete content type; defaults to an
+    /// empty view so existing call sites (previews included) need no changes.
+    private var footer: () -> AnyView
+
+    init<FooterContent: View>(
+        model: MultiAccountOverviewModel,
+        refreshState: RefreshState,
+        onToggleDetail: @escaping () -> Void,
+        onRefresh: @escaping () -> Void,
+        @ViewBuilder footer: @escaping () -> FooterContent = { EmptyView() }
+    ) {
+        self.model = model
+        self.refreshState = refreshState
+        self.onToggleDetail = onToggleDetail
+        self.onRefresh = onRefresh
+        self.footer = { AnyView(footer()) }
+    }
+
     /// Row height/spacing/visible-row cap shared with `UsageDetailView.accountsOverviewHeight`
     /// so the popover's outer `.frame(height:)` always matches this view's actual
     /// capped layout exactly — no clipping, no dead space below a short account list.
@@ -104,15 +127,19 @@ struct AccountsOverviewView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            header
-            nextAccessCard
-            summaryRow
-            rowsList
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 10) {
+                header
+                nextAccessCard
+                summaryRow
+                rowsList
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 14)
+            .padding(.bottom, 12)
+
+            footer()
         }
-        .padding(.horizontal, 14)
-        .padding(.top, 14)
-        .padding(.bottom, 12)
     }
 
     private var header: some View {

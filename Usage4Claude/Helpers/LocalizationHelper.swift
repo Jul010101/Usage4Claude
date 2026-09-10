@@ -111,6 +111,25 @@ enum L {
         static var codexTitle: String { localized("usage.codex_title") }
         static var codexRelogin: String { localized("usage.codex_relogin") }
     }
+
+    // MARK: - Brand OS (feat/brandos-quota, Phase C)
+    enum BrandOS {
+        static var title: String { localized("brandos.title") }
+        static var seatLive: String { localized("brandos.seat_live") }
+        static var seatBlocked: String { localized("brandos.seat_blocked") }
+        static var daemonStopped: String { localized("brandos.daemon_stopped") }
+        static var seatUnknown: String { localized("brandos.seat_unknown") }
+        static func queue(_ count: Int) -> String {
+            String(format: localized("brandos.queue"), count)
+        }
+        static var queueEmpty: String { localized("brandos.queue_empty") }
+        static var verdictGreen: String { localized("brandos.verdict_green") }
+        static var verdictRed: String { localized("brandos.verdict_red") }
+        static var verdictHeld: String { localized("brandos.verdict_held") }
+        static var verdictUnknown: String { localized("brandos.verdict_unknown") }
+        static var accessNeeded: String { localized("brandos.access_needed") }
+        static var grantAccess: String { localized("brandos.grant_access") }
+    }
     
     // MARK: - Settings Tabs
     enum SettingsTab {
@@ -139,6 +158,8 @@ enum L {
         static var interfaceLanguage: String { localized("settings.general.interface_language") }
         static var languageHint: String { localized("settings.general.language_hint") }
         static var resetButton: String { localized("settings.general.reset_button") }
+        static var brandOSQuotaToggle: String { localized("settings.general.brandos_quota_toggle") }
+        static var brandOSQuotaDescription: String { localized("settings.general.brandos_quota_description") }
     }
     
     // MARK: - Settings Authentication
@@ -559,6 +580,16 @@ enum L {
         }
         static var codexSessionExpiredTitle: String { localized("notification.codex_session_expired_title") }
         static var codexSessionExpiredBody: String { localized("notification.codex_session_expired_body") }
+        static var brandOSGateTitle: String { localized("notification.brandos_gate_title") }
+        static func brandOSGateGreenBody(_ script: String) -> String {
+            String(format: localized("notification.brandos_gate_green_body"), script)
+        }
+        static func brandOSGateRedBody(_ script: String) -> String {
+            String(format: localized("notification.brandos_gate_red_body"), script)
+        }
+        static func brandOSSummaryBody(_ count: Int) -> String {
+            String(format: localized("notification.brandos_summary_body"), count)
+        }
     }
 
     // MARK: - Settings General (Time Format)

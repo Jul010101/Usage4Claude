@@ -495,6 +495,16 @@ class UserSettings: ObservableObject {
         }
     }
 
+    /// Brand OS quota 功能总开关（feat/brandos-quota，Phase B）：控制 BrandOSQuotaService 是否
+    /// 读取 watchdog 目录并通过 DataRefreshManager 发布数据；关闭时 refresh() 直接
+    /// 返回 nil，UI 侧数据随之清空。默认关闭（opt-in），设置 UI 由 Phase C 添加。
+    @Published var brandOSQuotaEnabled: Bool {
+        didSet {
+            defaults.set(brandOSQuotaEnabled, forKey: "brandOSQuotaEnabled")
+            NotificationCenter.default.post(name: .settingsChanged, object: nil)
+        }
+    }
+
     /// 开机启动的注册/注销/状态同步都在 LaunchAtLoginManager 里，这里只做门面转发。
     /// isEnabled 直接派生自 SMAppService.mainApp.status（唯一事实来源），
     /// 不再需要存储 Bool + 标志位防递归，失败时 Toggle 会随 status 不变而自动弹回。
@@ -788,6 +798,9 @@ class UserSettings: ObservableObject {
         // 加载通知设置，默认开启
         self.notificationsEnabled = defaults.object(forKey: "notificationsEnabled") as? Bool ?? true
 
+        // 加载 Brand OS quota 开关，默认关闭（opt-in）
+        self.brandOSQuotaEnabled = defaults.bool(forKey: "brandOSQuotaEnabled")
+
         // 开机启动状态的加载已搬进 LaunchAtLoginManager.init()
 
         // MARK: - 初始化调试模式设置
@@ -895,6 +908,7 @@ class UserSettings: ObservableObject {
         customDisplayTypes = Self.defaultCustomDisplayTypes
         customDisplayMenuBarOnly = false
         notificationsEnabled = true
+        brandOSQuotaEnabled = false
 
         // 重置智能模式状态
         lastUtilization = nil

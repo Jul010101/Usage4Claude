@@ -101,6 +101,24 @@ struct GeneralSettingsDisplaySection: View {
                         .disabled(settings.iconDisplayMode == .percentageOnly)
                     }
                 }
+
+                Divider()
+
+                // Brand OS 区块开关（feat/brandos-quota，Phase C，默认关闭）
+                VStack(alignment: .leading, spacing: 6) {
+                    Toggle(isOn: $settings.brandOSQuotaEnabled) {
+                        Text(L.SettingsGeneral.brandOSQuotaToggle)
+                            .font(.subheadline)
+                    }
+                    .toggleStyle(.checkbox)
+                    .focusable(false)
+
+                    Text(L.SettingsGeneral.brandOSQuotaDescription)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.leading, 20)
+                }
             }
         }
     }
