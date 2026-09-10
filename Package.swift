@@ -36,7 +36,8 @@ let package = Package(
                 "Helpers/NotificationDecisionEngine.swift",
                 "Models/CodexUsageData.swift",
                 "Helpers/AccountUsageStatus.swift",
-                "Helpers/AccountAvailability.swift"
+                "Helpers/AccountAvailability.swift",
+                "Helpers/BrandOSQuotaParser.swift"
             ]
         ),
         .testTarget(
