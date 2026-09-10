@@ -26,5 +26,17 @@
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spks</string>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spki</string>
 	</array>
+	<!--
+	  Brand OS quota feature (feat/brandos-quota): read-only access to the
+	  daemon's watchdog artifacts (quota-queue, quota-log, quota-results/)
+	  living under the *real* home directory (not the sandbox container),
+	  resolved via getpwuid() by BrandOSQuotaService. Trailing slash grants
+	  recursive read access to the whole subtree; nothing outside this one
+	  directory is touched, and it is read-only.
+	-->
+	<key>com.apple.security.temporary-exception.files.home-relative-path.read-only</key>
+	<array>
+		<string>/.config/opencode/skills/brand-os-figma/.watchdog/</string>
+	</array>
 </dict>
 </plist>

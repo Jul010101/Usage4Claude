@@ -32,6 +32,10 @@ extension Logger {
     /// 本地化管理日志
     /// 用于记录语言切换和本地化相关操作
     static let localization = Logger(subsystem: subsystem, category: "Localization")
+
+    /// Brand OS quota 功能日志（feat/brandos-quota）
+    /// 用于记录 watchdog 目录读取、访问状态判定和 notify-walk 相关操作
+    static let brandOS = Logger(subsystem: subsystem, category: "BrandOS")
 }
 
 // MARK: - 日志级别说明
