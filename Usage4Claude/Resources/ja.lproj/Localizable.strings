@@ -65,6 +65,8 @@
 "settings.general.interface_language" = "インターフェース言語";
 "settings.general.language_hint" = "表示言語を変更";
 "settings.general.reset_button" = "デフォルトに戻す";
+"settings.general.brandos_quota_toggle" = "Brand OSセクションを表示";
+"settings.general.brandos_quota_description" = "ポップオーバーにFigmaシートの状態、ゲートキュー、Brand OSクォータデーモンの最新の結果を表示します。";
 "icon_style.color_translucent" = "カラー透明";
 "icon_style.color_with_background" = "カラー背景付き";
 "icon_style.monochrome" = "モノクローム";
@@ -399,6 +401,25 @@
 "notification.reset_body" = "%@の使用量がリセットされました";
 "notification.codex_session_expired_title" = "Codex セッションの期限切れ";
 "notification.codex_session_expired_body" = "Codex の使用量を確認するには、再ログインしてください。";
+"notification.brandos_gate_title" = "Brand OS";
+"notification.brandos_gate_green_body" = "%@ — 緑（GREEN）";
+"notification.brandos_gate_red_body" = "%@ — 赤（RED）";
+"notification.brandos_summary_body" = "%d 件の新しいゲート結果";
+
+// MARK: - Brand OS (feat/brandos-quota, Phase C)
+"brandos.title" = "Brand OS";
+"brandos.seat_live" = "Figmaシート有効";
+"brandos.seat_blocked" = "Figmaシートブロック中";
+"brandos.daemon_stopped" = "デーモン停止中";
+"brandos.seat_unknown" = "シート状態不明";
+"brandos.queue" = "キュー: %d件";
+"brandos.queue_empty" = "キューは空です";
+"brandos.verdict_green" = "GREEN";
+"brandos.verdict_red" = "RED";
+"brandos.verdict_held" = "保留中 — 再試行します";
+"brandos.verdict_unknown" = "不明";
+"brandos.access_needed" = "Brand OS: アクセスが必要です";
+"brandos.grant_access" = "アクセスを許可…";
 
 // MARK: - Web Login (v2.2.0)
 "weblogin.window_title" = "Claude にサインイン";

@@ -65,6 +65,8 @@
 "settings.general.interface_language" = "介面語言";
 "settings.general.language_hint" = "變更介面顯示語言";
 "settings.general.reset_button" = "恢復預設設定";
+"settings.general.brandos_quota_toggle" = "顯示 Brand OS 區塊";
+"settings.general.brandos_quota_description" = "在彈出視窗中顯示 Figma 席位狀態、閘門佇列，以及 Brand OS 配額守護程式的最新結果。";
 "icon_style.color_translucent" = "彩色通透";
 "icon_style.color_with_background" = "彩色背景";
 "icon_style.monochrome" = "單色主題";
@@ -399,6 +401,25 @@
 "notification.reset_body" = "%@ 用量已重設";
 "notification.codex_session_expired_title" = "Codex 登入已過期";
 "notification.codex_session_expired_body" = "請重新登入以繼續查看 Codex 用量。";
+"notification.brandos_gate_title" = "Brand OS";
+"notification.brandos_gate_green_body" = "%@ — 通過（GREEN）";
+"notification.brandos_gate_red_body" = "%@ — 未通過（RED）";
+"notification.brandos_summary_body" = "%d 筆新的閘門結果";
+
+// MARK: - Brand OS (feat/brandos-quota, Phase C)
+"brandos.title" = "Brand OS";
+"brandos.seat_live" = "Figma 席位上線";
+"brandos.seat_blocked" = "Figma 席位受阻";
+"brandos.daemon_stopped" = "守護程式已停止";
+"brandos.seat_unknown" = "席位狀態未知";
+"brandos.queue" = "佇列：%d";
+"brandos.queue_empty" = "佇列為空";
+"brandos.verdict_green" = "GREEN";
+"brandos.verdict_red" = "RED";
+"brandos.verdict_held" = "已保留 — 正在重試";
+"brandos.verdict_unknown" = "未知";
+"brandos.access_needed" = "Brand OS：需要授權存取";
+"brandos.grant_access" = "授予存取權限…";
 
 // MARK: - Web Login (v2.2.0)
 "weblogin.window_title" = "登入 Claude";

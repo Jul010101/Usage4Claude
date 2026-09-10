@@ -64,6 +64,8 @@
 "settings.general.interface_language" = "Oberflächensprache";
 "settings.general.language_hint" = "Ändert die Anzeigesprache der Oberfläche";
 "settings.general.reset_button" = "Auf Standard zurücksetzen";
+"settings.general.brandos_quota_toggle" = "Brand-OS-Bereich anzeigen";
+"settings.general.brandos_quota_description" = "Zeigt Figma-Sitzplatzstatus, Gate-Warteschlange und letztes Ergebnis des Brand-OS-Quota-Daemons im Popover an.";
 "icon_style.color_translucent" = "Farbig transparent";
 "icon_style.color_with_background" = "Farbig mit Hintergrund";
 "icon_style.monochrome" = "Einfarbig";
@@ -398,6 +400,25 @@
 "notification.reset_body" = "Die Nutzung von %@ wurde zurückgesetzt";
 "notification.codex_session_expired_title" = "Codex-Sitzung abgelaufen";
 "notification.codex_session_expired_body" = "Bitte erneut anmelden, um die Codex-Nutzung weiter zu überwachen";
+"notification.brandos_gate_title" = "Brand OS";
+"notification.brandos_gate_green_body" = "%@ — GRÜN";
+"notification.brandos_gate_red_body" = "%@ — ROT";
+"notification.brandos_summary_body" = "%d neue Gate-Ergebnisse";
+
+// MARK: - Brand OS (feat/brandos-quota, Phase C)
+"brandos.title" = "Brand OS";
+"brandos.seat_live" = "Figma-Sitzplatz aktiv";
+"brandos.seat_blocked" = "Figma-Sitzplatz blockiert";
+"brandos.daemon_stopped" = "Daemon gestoppt";
+"brandos.seat_unknown" = "Sitzplatzstatus unbekannt";
+"brandos.queue" = "Warteschlange: %d";
+"brandos.queue_empty" = "Warteschlange leer";
+"brandos.verdict_green" = "GREEN";
+"brandos.verdict_red" = "RED";
+"brandos.verdict_held" = "angehalten – wird wiederholt";
+"brandos.verdict_unknown" = "unbekannt";
+"brandos.access_needed" = "Brand OS: Zugriff erforderlich";
+"brandos.grant_access" = "Zugriff gewähren…";
 
 // MARK: - Web Login (v2.2.0)
 "weblogin.window_title" = "Bei Claude anmelden";

@@ -65,6 +65,8 @@
 "settings.general.interface_language" = "Langue de l'interface";
 "settings.general.language_hint" = "Changer la langue d'affichage de l'interface";
 "settings.general.reset_button" = "Réinitialiser par défaut";
+"settings.general.brandos_quota_toggle" = "Afficher la section Brand OS";
+"settings.general.brandos_quota_description" = "Affiche l'état du siège Figma, la file d'attente des gates et le dernier verdict du démon de quota Brand OS dans la fenêtre contextuelle.";
 "icon_style.color_translucent" = "Couleur translucide";
 "icon_style.color_with_background" = "Couleur avec fond";
 "icon_style.monochrome" = "Monochrome";
@@ -399,6 +401,25 @@
 "notification.reset_body" = "L'utilisation de %@ a été réinitialisée";
 "notification.codex_session_expired_title" = "Session Codex expirée";
 "notification.codex_session_expired_body" = "Veuillez vous reconnecter pour continuer à surveiller votre utilisation Codex.";
+"notification.brandos_gate_title" = "Brand OS";
+"notification.brandos_gate_green_body" = "%@ — VERT";
+"notification.brandos_gate_red_body" = "%@ — ROUGE";
+"notification.brandos_summary_body" = "%d nouveaux résultats de contrôle";
+
+// MARK: - Brand OS (feat/brandos-quota, Phase C)
+"brandos.title" = "Brand OS";
+"brandos.seat_live" = "Siège Figma actif";
+"brandos.seat_blocked" = "Siège Figma bloqué";
+"brandos.daemon_stopped" = "Démon arrêté";
+"brandos.seat_unknown" = "Siège inconnu";
+"brandos.queue" = "File d'attente : %d";
+"brandos.queue_empty" = "File d'attente vide";
+"brandos.verdict_green" = "GREEN";
+"brandos.verdict_red" = "RED";
+"brandos.verdict_held" = "en attente — nouvelle tentative";
+"brandos.verdict_unknown" = "inconnu";
+"brandos.access_needed" = "Brand OS : accès requis";
+"brandos.grant_access" = "Accorder l'accès…";
 
 // MARK: - Web Login (v2.2.0)
 "weblogin.window_title" = "Se connecter à Claude";
