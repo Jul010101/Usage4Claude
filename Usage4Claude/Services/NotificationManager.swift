@@ -276,6 +276,62 @@ final class NotificationManager: NSObject {
         Logger.menuBar.info("已发送 Codex 登录过期通知")
     }
 
+    /// 发送 Brand OS 单次 gate 脚本运行完成的系统通知（identifier 使用结果文件名去重，由 OS 自身
+    /// 处理同一结果的重复投递）。“仅通知一次”的去重语义由调用方 BrandOSQuotaService
+    /// 的 notify-walk 算法负责，这里只管拼内容发送。
+    func sendBrandOSGateFinishedNotification(script: String?, verdict: GateVerdict, resultFilename: String) {
+        let content = UNMutableNotificationContent()
+        content.title = L.UsageNotification.brandOSGateTitle
+        let displayScript = script ?? resultFilename
+        switch verdict {
+        case .green:
+            content.body = L.UsageNotification.brandOSGateGreenBody(displayScript)
+        case .red:
+            content.body = L.UsageNotification.brandOSGateRedBody(displayScript)
+        case .held, .unknown:
+            // notify-walk 只会对 green/red 调用本方法；防御性地为其它情况提供一个中性文本，而非 crash/强制解包。
+            content.body = displayScript
+        }
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: "brandos_gate_\(resultFilename)",
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                Logger.brandOS.error("发送 Brand OS gate 通知失败: \(error.localizedDescription)")
+            }
+        }
+
+        Logger.brandOS.info("已发送 Brand OS gate 通知: \(displayScript) verdict=\(String(describing: verdict))")
+    }
+
+    /// 发送多条新 gate 结果合并后的摘要通知（notify-walk 单次发现超过阈值条新结果时使用，
+    /// 避免瞬间轰炸多条系统通知）。
+    func sendBrandOSSummaryNotification(count: Int, resultFilename: String) {
+        let content = UNMutableNotificationContent()
+        content.title = L.UsageNotification.brandOSGateTitle
+        content.body = L.UsageNotification.brandOSSummaryBody(count)
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: "brandos_gate_summary_\(resultFilename)",
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                Logger.brandOS.error("发送 Brand OS 摘要通知失败: \(error.localizedDescription)")
+            }
+        }
+
+        Logger.brandOS.info("已发送 Brand OS 摘要通知: \(count) 条新结果")
+    }
+
     /// 重置所有已通知记录
     func resetAllNotificationStates() {
         notifiedWarnings.removeAll()
