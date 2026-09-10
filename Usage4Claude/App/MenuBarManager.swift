@@ -71,6 +71,8 @@ class MenuBarManager: ObservableObject {
     @Published var usageData: UsageData?
     /// Codex 用量数据（从 dataManager 同步）
     @Published var codexUsageData: CodexUsageData?
+    /// Brand OS quota 快照（从 dataManager 同步，feat/brandos-quota）
+    @Published var brandOSQuota: BrandOSQuotaData?
     /// 加载状态（从 dataManager 同步）
     @Published var isLoading = false
     /// 错误消息（从 dataManager 同步）
@@ -133,6 +135,9 @@ class MenuBarManager: ObservableObject {
 
         dataManager.$codexNeedsRelogin
             .assign(to: &$codexNeedsRelogin)
+
+        dataManager.$brandOSQuota
+            .assign(to: &$brandOSQuota)
     }
     
     /// 处理菜单栏图标点击事件
@@ -369,6 +374,11 @@ class MenuBarManager: ObservableObject {
                 set: { _ in }
             ),
             overviewModel: multiAccountOverviewModel
+,
+            brandOSQuota: Binding(
+                get: { self.brandOSQuota },
+                set: { self.brandOSQuota = $0 }
+            )
         ))
 
         // 打开 popover
